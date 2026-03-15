@@ -26,9 +26,9 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 1}
-        className="rounded-lg px-3 py-2 text-sm text-gray transition-colors
-                   hover:text-white hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed
-                   focus:outline-none focus:ring-2 focus:ring-deep-blue/50"
+        className="rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors
+                   hover:text-white hover:bg-brand-card disabled:opacity-30 disabled:cursor-not-allowed
+                   focus:outline-none focus:ring-2 focus:ring-brand-blue/50"
         aria-label="Página anterior"
       >
         &larr;
@@ -36,7 +36,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
 
       {pages.map((p, i) =>
         p === '...' ? (
-          <span key={`dots-${i}`} className="px-2 text-gray">
+          <span key={`dots-${i}`} className="px-2 text-slate-500">
             ...
           </span>
         ) : (
@@ -44,10 +44,10 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
             key={p}
             onClick={() => onPageChange(p)}
             className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors
-                       focus:outline-none focus:ring-2 focus:ring-deep-blue/50
+                       focus:outline-none focus:ring-2 focus:ring-brand-blue/50
                        ${p === page
-                         ? 'bg-deep-blue text-white'
-                         : 'text-gray hover:text-white hover:bg-white/5'
+                         ? 'bg-brand-blue text-white'
+                         : 'text-slate-400 hover:text-white hover:bg-brand-card'
                        }`}
             aria-current={p === page ? 'page' : undefined}
           >
@@ -59,9 +59,9 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
-        className="rounded-lg px-3 py-2 text-sm text-gray transition-colors
-                   hover:text-white hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed
-                   focus:outline-none focus:ring-2 focus:ring-deep-blue/50"
+        className="rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors
+                   hover:text-white hover:bg-brand-card disabled:opacity-30 disabled:cursor-not-allowed
+                   focus:outline-none focus:ring-2 focus:ring-brand-blue/50"
         aria-label="Página siguiente"
       >
         &rarr;

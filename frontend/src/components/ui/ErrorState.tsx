@@ -9,17 +9,17 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
       className="flex flex-col items-center justify-center py-12 text-center"
       role="alert"
     >
-      <div className="mb-4 text-5xl">!</div>
+      <div className="mb-4 text-5xl text-red-accent">!</div>
       <p className="mb-2 text-lg text-red-accent font-semibold">
         Error al cargar datos
       </p>
-      <p className="mb-6 text-sm text-gray">{message}</p>
+      <p className="mb-6 text-sm text-slate-400">{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="rounded-lg bg-red-accent px-6 py-2 text-sm font-medium text-white
-                     transition-colors hover:bg-red-accent/80 focus:outline-none focus:ring-2
-                     focus:ring-red-accent/50"
+          className="rounded-lg bg-brand-blue px-6 py-2 text-sm font-medium text-white
+                     transition-all hover:bg-brand-blue-hover glow-blue
+                     focus:outline-none focus:ring-2 focus:ring-brand-blue/50"
         >
           Reintentar
         </button>

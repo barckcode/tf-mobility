@@ -9,6 +9,10 @@ interface ContractFiltersProps {
   statuses: string[];
 }
 
+const selectClass = `rounded-lg bg-brand-card border border-brand-border px-3 py-2 text-sm
+                     text-white focus:border-brand-blue focus:outline-none focus:ring-1
+                     focus:ring-brand-blue`;
+
 export function ContractFiltersBar({
   filters,
   onChange,
@@ -27,13 +31,10 @@ export function ContractFiltersBar({
       role="search"
       aria-label="Filtrar contratos"
     >
-      {/* Road filter */}
       <select
         value={filters.road || ''}
         onChange={(e) => update('road', e.target.value)}
-        className="rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm
-                   text-white focus:border-deep-blue focus:outline-none focus:ring-1
-                   focus:ring-deep-blue"
+        className={selectClass}
         aria-label="Filtrar por carretera"
       >
         <option value="">Todas las carreteras</option>
@@ -42,13 +43,10 @@ export function ContractFiltersBar({
         ))}
       </select>
 
-      {/* Company filter */}
       <select
         value={filters.company || ''}
         onChange={(e) => update('company', e.target.value)}
-        className="rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm
-                   text-white focus:border-deep-blue focus:outline-none focus:ring-1
-                   focus:ring-deep-blue"
+        className={selectClass}
         aria-label="Filtrar por adjudicatario"
       >
         <option value="">Todos los adjudicatarios</option>
@@ -57,13 +55,10 @@ export function ContractFiltersBar({
         ))}
       </select>
 
-      {/* Type filter */}
       <select
         value={filters.type || ''}
         onChange={(e) => update('type', e.target.value)}
-        className="rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm
-                   text-white focus:border-deep-blue focus:outline-none focus:ring-1
-                   focus:ring-deep-blue"
+        className={selectClass}
         aria-label="Filtrar por tipo"
       >
         <option value="">Todos los tipos</option>
@@ -72,13 +67,10 @@ export function ContractFiltersBar({
         ))}
       </select>
 
-      {/* Status filter */}
       <select
         value={filters.status || ''}
         onChange={(e) => update('status', e.target.value)}
-        className="rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm
-                   text-white focus:border-deep-blue focus:outline-none focus:ring-1
-                   focus:ring-deep-blue"
+        className={selectClass}
         aria-label="Filtrar por estado"
       >
         <option value="">Todos los estados</option>
@@ -87,13 +79,10 @@ export function ContractFiltersBar({
         ))}
       </select>
 
-      {/* Year filter */}
       <select
         value={filters.year || ''}
         onChange={(e) => update('year', e.target.value ? Number(e.target.value) : undefined)}
-        className="rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm
-                   text-white focus:border-deep-blue focus:outline-none focus:ring-1
-                   focus:ring-deep-blue"
+        className={selectClass}
         aria-label="Filtrar por año"
       >
         <option value="">Todos los años</option>
@@ -102,7 +91,6 @@ export function ContractFiltersBar({
         ))}
       </select>
 
-      {/* Clear filters */}
       {Object.values(filters).some(Boolean) && (
         <button
           onClick={() => onChange({})}

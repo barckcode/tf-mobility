@@ -38,8 +38,8 @@ export function Promises() {
       className="relative py-20"
       aria-label="Promesas vs Realidad - Seguimiento de proyectos"
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-navy to-navy-light pointer-events-none" />
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-brand-bg to-brand-surface pointer-events-none" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
         {/* Section header */}
@@ -48,9 +48,9 @@ export function Promises() {
             Seguimiento ciudadano
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-            Promesas vs <span className="text-red-accent">Realidad</span>
+            Promesas vs <span className="gradient-text-red">Realidad</span>
           </h2>
-          <p className="text-gray max-w-2xl">
+          <p className="text-slate-300 max-w-2xl">
             Seguimiento del estado real de los proyectos de infraestructuras viarias
             prometidos por las administraciones.
           </p>
@@ -67,7 +67,7 @@ export function Promises() {
         ) : data ? (
           <>
             {/* Summary counters */}
-            <div className="grid grid-cols-3 gap-4 mb-8 max-w-lg">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8 max-w-lg">
               <div className="rounded-xl bg-green/10 border border-green/20 p-4 text-center">
                 <p className="font-mono text-2xl font-bold text-green">
                   {data.summary.on_track}
@@ -90,13 +90,13 @@ export function Promises() {
 
             {/* Sort controls */}
             <div className="flex items-center gap-2 mb-6">
-              <span className="text-xs text-gray">Ordenar por:</span>
+              <span className="text-xs text-slate-500">Ordenar por:</span>
               <button
                 onClick={() => setSortMode('status')}
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors
                            ${sortMode === 'status'
-                             ? 'bg-red-accent/20 text-red-accent border border-red-accent/30'
-                             : 'bg-white/5 text-gray border border-white/10 hover:text-white'}`}
+                             ? 'bg-brand-blue/20 text-brand-blue border border-brand-blue/30'
+                             : 'bg-brand-card text-slate-400 border border-brand-border hover:text-white'}`}
               >
                 Estado (peor primero)
               </button>
@@ -104,8 +104,8 @@ export function Promises() {
                 onClick={() => setSortMode('date')}
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors
                            ${sortMode === 'date'
-                             ? 'bg-red-accent/20 text-red-accent border border-red-accent/30'
-                             : 'bg-white/5 text-gray border border-white/10 hover:text-white'}`}
+                             ? 'bg-brand-blue/20 text-brand-blue border border-brand-blue/30'
+                             : 'bg-brand-card text-slate-400 border border-brand-border hover:text-white'}`}
               >
                 Fecha (más reciente)
               </button>

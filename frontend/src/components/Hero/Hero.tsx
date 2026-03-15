@@ -41,7 +41,7 @@ export function Hero() {
         },
         {
           icon: '\u{1F4C8}',
-          label: 'Índice de motorización (por 1.000 hab.)',
+          label: 'Índice motorización (por 1.000 hab.)',
           value: data.motorization_index,
           decimals: 0,
           source: 'Cálculo propio',
@@ -56,21 +56,21 @@ export function Hero() {
       className="relative min-h-screen flex items-center pt-20 pb-16"
       aria-label="El Impacto - Estadísticas clave de movilidad"
     >
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-navy via-navy to-navy-light pointer-events-none" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 h-96 w-96 rounded-full
-                      bg-red-accent/5 blur-3xl pointer-events-none" />
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-brand-bg via-brand-bg to-brand-surface pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 h-[500px] w-[500px] rounded-full
+                      bg-brand-blue/[0.04] blur-3xl pointer-events-none" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 w-full">
         {/* Section title */}
         <div className="text-center mb-12">
-          <p className="text-red-accent font-mono text-sm tracking-widest uppercase mb-3">
+          <p className="text-brand-blue font-mono text-sm tracking-widest uppercase mb-3">
             Observatorio de Movilidad
           </p>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
-            El <span className="text-red-accent">Impacto</span>
+            El <span className="gradient-text-red">Impacto</span>
           </h1>
-          <p className="text-lg text-gray max-w-2xl mx-auto">
+          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
             Tenerife tiene uno de los índices de motorización más altos del mundo.
             Estos son los números que lo demuestran.
           </p>
@@ -86,7 +86,7 @@ export function Hero() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {kpis.map((kpi, i) => (
               <div key={kpi.label} style={{ transitionDelay: `${i * 150}ms` }}>
                 <KpiCard
@@ -105,7 +105,7 @@ export function Hero() {
 
         {/* Data year note */}
         {data && (
-          <p className="text-center mt-8 text-xs text-gray/50">
+          <p className="text-center mt-8 text-xs text-slate-500">
             Datos correspondientes al año {data.data_year} — Isla de Tenerife ({data.island_area_km2} km²)
           </p>
         )}

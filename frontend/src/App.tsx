@@ -6,7 +6,7 @@ import { Footer } from '@/components/Footer/Footer';
 
 function App() {
   return (
-    <div className="min-h-screen bg-navy text-white">
+    <div className="min-h-screen bg-brand-bg text-white">
       <Header />
       <main>
         <Hero />

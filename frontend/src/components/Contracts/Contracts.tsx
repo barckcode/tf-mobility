@@ -32,7 +32,6 @@ export function Contracts() {
     refetch: refetchRankings,
   } = useFetch(getRankings);
 
-  // Extract unique values for filter dropdowns from current data
   const filterOptions = useMemo(() => {
     const items = contractsData?.items || [];
     return {
@@ -45,7 +44,7 @@ export function Contracts() {
 
   const handleFilterChange = (newFilters: ContractFilters) => {
     setFilters(newFilters);
-    setPage(1); // Reset to first page on filter change
+    setPage(1);
   };
 
   return (
@@ -54,20 +53,19 @@ export function Contracts() {
       className="relative py-20"
       aria-label="El Dinero Público - Contratos de infraestructura"
     >
-      {/* Section background accent */}
-      <div className="absolute inset-0 bg-gradient-to-b from-navy-light to-navy pointer-events-none" />
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-deep-blue/30 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-brand-surface to-brand-bg pointer-events-none" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
         {/* Section header */}
         <div className="mb-12">
-          <p className="text-deep-blue font-mono text-sm tracking-widest uppercase mb-3">
+          <p className="text-brand-blue font-mono text-sm tracking-widest uppercase mb-3">
             Transparencia presupuestaria
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-            El Dinero <span className="text-deep-blue">Público</span>
+            El Dinero <span className="gradient-text">Público</span>
           </h2>
-          <p className="text-gray max-w-2xl">
+          <p className="text-slate-300 max-w-2xl">
             Todos los contratos de infraestructuras viarias de Tenerife. Filtra, busca
             y descubre a dónde va el dinero de todos.
           </p>
@@ -104,10 +102,10 @@ export function Contracts() {
           ) : contractsData ? (
             <>
               <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm text-gray">
+                <p className="text-sm text-slate-400">
                   {contractsData.total.toLocaleString('es-ES')} contratos encontrados
                 </p>
-                <p className="text-xs text-gray/60">
+                <p className="text-xs text-slate-500">
                   Página {contractsData.page} de {contractsData.pages}
                 </p>
               </div>

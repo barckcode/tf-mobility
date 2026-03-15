@@ -21,8 +21,8 @@ function formatMillions(value: number): string {
 }
 
 const COLORS = [
-  '#E94560', '#0F3460', '#16C79A', '#F5A623', '#6C757D',
-  '#E94560CC', '#0F3460CC', '#16C79ACC', '#F5A623CC', '#6C757DCC',
+  '#3b82f6', '#8b5cf6', '#16C79A', '#F5A623', '#E94560',
+  '#60a5fa', '#a78bfa', '#34d399', '#fbbf24', '#f87171',
 ];
 
 export function RankingChart({ rankings }: RankingChartProps) {
@@ -34,9 +34,9 @@ export function RankingChart({ rankings }: RankingChartProps) {
   }));
 
   return (
-    <div className="rounded-2xl bg-white/5 border border-white/10 p-6">
+    <div className="rounded-xl bg-brand-card border border-brand-border p-6">
       <h3 className="text-lg font-semibold mb-1">Top 10 Adjudicatarios</h3>
-      <p className="text-xs text-gray mb-6">Por importe total adjudicado</p>
+      <p className="text-xs text-slate-400 mb-6">Por importe total adjudicado</p>
 
       <div className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -45,24 +45,24 @@ export function RankingChart({ rankings }: RankingChartProps) {
             layout="vertical"
             margin={{ top: 0, right: 20, left: 0, bottom: 0 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(51,65,85,0.5)" />
             <XAxis
               type="number"
               tickFormatter={formatMillions}
-              tick={{ fill: '#6C757D', fontSize: 11 }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+              tick={{ fill: '#94a3b8', fontSize: 11 }}
+              axisLine={{ stroke: '#334155' }}
             />
             <YAxis
               type="category"
               dataKey="name"
               width={180}
-              tick={{ fill: '#6C757D', fontSize: 11 }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+              tick={{ fill: '#94a3b8', fontSize: 11 }}
+              axisLine={{ stroke: '#334155' }}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#1A1A2E',
-                border: '1px solid rgba(255,255,255,0.1)',
+                backgroundColor: '#0f172a',
+                border: '1px solid #334155',
                 borderRadius: '12px',
                 color: '#fff',
                 fontSize: '13px',
