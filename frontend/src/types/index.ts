@@ -1,0 +1,76 @@
+// API response types
+
+export interface StatsResponse {
+  registered_cars: number;
+  total_vehicles: number;
+  cars_per_km2: number;
+  population: number;
+  motorization_index: number;
+  island_area_km2: number;
+  data_year: number;
+  sources: Record<string, string>;
+}
+
+export interface Contract {
+  id: number;
+  expediente: string;
+  objeto: string;
+  tipo: string;
+  importe_licitacion: number;
+  importe_adjudicacion: number;
+  adjudicatario: string;
+  fecha: string;
+  estado: string;
+  carreteras: string[];
+  source_url?: string;
+}
+
+export interface ContractsResponse {
+  items: Contract[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+}
+
+export interface CompanyRanking {
+  company: string;
+  total_amount: number;
+  contract_count: number;
+}
+
+export interface RankingsResponse {
+  top_companies: CompanyRanking[];
+}
+
+export interface Project {
+  id: number;
+  name: string;
+  description: string;
+  announced_date: string;
+  promised_date: string;
+  status: 'completado' | 'en_plazo' | 'retrasado' | 'paralizado' | 'sin_iniciar';
+  responsible_entity: string;
+  sources: { label: string; url: string }[];
+  related_contracts: string[];
+  last_update: string;
+}
+
+export interface ProjectsResponse {
+  projects: Project[];
+  summary: {
+    on_track: number;
+    delayed: number;
+    stalled: number;
+  };
+}
+
+export interface ContractFilters {
+  road?: string;
+  company?: string;
+  min_amount?: number;
+  max_amount?: number;
+  year?: number;
+  type?: string;
+  status?: string;
+}

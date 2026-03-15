@@ -1,0 +1,46 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3080:80"
+    networks:
+      - tfmobility
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8000"
+    volumes:
+      - db-data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:///./data/tfmobility.db
+    networks:
+      - tfmobility
+    restart: unless-stopped
+
+  etl:
+    build:
+      context: ./etl
+      dockerfile: Dockerfile
+    volumes:
+      - db-data:/app/data
+    environment:
+      - DATABASE_PATH=/app/data/tfmobility.db
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - tfmobility
+    restart: "no"
+
+volumes:
+  db-data:
+
+networks:
+  tfmobility:
+    driver: bridge
