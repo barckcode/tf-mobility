@@ -16,7 +16,7 @@ const TYPE_ICONS: Record<string, string> = {
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   operativo: { label: 'Operativo', color: 'text-green', bg: 'bg-green/10' },
   en_estudio: { label: 'En estudio', color: 'text-brand-blue', bg: 'bg-brand-blue/10' },
-  futuro: { label: 'Planificado', color: 'text-brand-blue', bg: 'bg-brand-blue/10' },
+  futuro: { label: 'Futuro', color: 'text-brand-blue', bg: 'bg-brand-blue/10' },
   fragmentado: { label: 'Fragmentado', color: 'text-yellow', bg: 'bg-yellow/10' },
   reciente: { label: 'Reciente', color: 'text-green', bg: 'bg-green/10' },
   suspendido: { label: 'Suspendido', color: 'text-red-accent', bg: 'bg-red-accent/10' },
@@ -53,6 +53,14 @@ export function AlternativeCard({ alternative }: AlternativeCardProps) {
                 <span className="text-slate-500">Cobertura: </span>
                 <span className="font-mono font-medium text-green">
                   {alternative.coverage}
+                </span>
+              </div>
+            )}
+            {alternative.operator && (
+              <div>
+                <span className="text-slate-500">Operador: </span>
+                <span className="font-mono font-medium text-green">
+                  {alternative.operator}
                 </span>
               </div>
             )}

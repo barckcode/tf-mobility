@@ -11,21 +11,21 @@ interface Regulation {
 const REGULATIONS: Regulation[] = [
   {
     island: 'Formentera',
-    region: 'Formentera (Baleares), España',
+    region: 'Baleares, España',
     status: 'regulated',
     measure: 'Limita entrada de vehículos en verano + tasa de circulación',
     since: '2019',
   },
   {
     island: 'Ibiza',
-    region: 'Ibiza (Baleares), España',
+    region: 'Baleares, España',
     status: 'regulated',
     measure: 'Cupo de 20.168 vehículos foráneos/día en temporada alta',
     since: '2025',
   },
   {
     island: 'Mallorca',
-    region: 'Mallorca (Baleares), España',
+    region: 'Baleares, España',
     status: 'pending',
     measure: 'Legislación en preparación tras 400K coches externos en 2023',
     since: '—',
@@ -46,7 +46,7 @@ const REGULATIONS: Regulation[] = [
   },
   {
     island: 'Tenerife',
-    region: 'Tenerife (Canarias), España',
+    region: 'Canarias, España',
     status: 'partial',
     measure: 'Restricciones puntuales (Teide, Anaga, La Graciosa). Sin regulación general de rent-a-car',
     since: '2024',

@@ -45,11 +45,20 @@ export function Comparison() {
             <div className="rounded-xl bg-brand-card border border-brand-border p-6">
               <h3 className="text-lg font-semibold mb-4">Presión turística</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {data.islands
-                  .filter((i) => (i.tourist_resident_ratio || 0) > 0)
-                  .sort((a, b) => (b.tourist_resident_ratio || 0) - (a.tourist_resident_ratio || 0))
-                  .slice(0, 3)
-                  .map((island, idx) => (
+                {(() => {
+                  const withRatio = data.islands
+                    .filter((i) => (i.tourist_resident_ratio || 0) > 0)
+                    .sort((a, b) => (b.tourist_resident_ratio || 0) - (a.tourist_resident_ratio || 0));
+                  const top3 = withRatio.slice(0, 3);
+                  const hasTenerife = top3.some((i) => i.island === 'Tenerife');
+                  const result = hasTenerife
+                    ? top3
+                    : [
+                        ...withRatio.filter((i) => i.island !== 'Tenerife').slice(0, 2),
+                        ...withRatio.filter((i) => i.island === 'Tenerife').slice(0, 1),
+                      ].sort((a, b) => (b.tourist_resident_ratio || 0) - (a.tourist_resident_ratio || 0));
+                  return result;
+                })().map((island, idx) => (
                     <div
                       key={island.island}
                       className="rounded-lg bg-brand-surface border border-brand-border p-4 text-center"
