@@ -20,24 +20,16 @@ function formatMillions(value: number): string {
   return String(value);
 }
 
-const COLORS = ['#3b82f6', '#8b5cf6', '#16C79A', '#F5A623', '#E94560', '#60a5fa', '#a78bfa'];
-
-function getGroupOrder(community: string): number {
-  if (community === 'Canarias') return 0;
-  if (community === 'Illes Balears') return 1;
-  return 2;
-}
+const DEFAULT_COLOR = '#3b82f6';
+const TENERIFE_COLOR = '#E94560';
 
 export function ComparisonChart({ islands }: ComparisonChartProps) {
   const data = [...islands]
-    .sort((a, b) => {
-      const groupDiff = getGroupOrder(a.community) - getGroupOrder(b.community);
-      if (groupDiff !== 0) return groupDiff;
-      return (b.cars_per_km2 || 0) - (a.cars_per_km2 || 0);
-    })
+    .sort((a, b) => (b.road_investment_m_eur || 0) - (a.road_investment_m_eur || 0))
     .map((island) => ({
       name: island.island,
       investment: island.road_investment_m_eur || 0,
+      isTenerife: island.island === 'Tenerife',
     }));
 
   return (
@@ -86,8 +78,8 @@ export function ComparisonChart({ islands }: ComparisonChartProps) {
               ]}
             />
             <Bar dataKey="investment" radius={[0, 6, 6, 0]} barSize={24}>
-              {data.map((_, i) => (
-                <Cell key={i} fill={COLORS[i % COLORS.length]} />
+              {data.map((entry, i) => (
+                <Cell key={i} fill={entry.isTenerife ? TENERIFE_COLOR : DEFAULT_COLOR} />
               ))}
             </Bar>
           </BarChart>

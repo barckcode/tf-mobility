@@ -27,7 +27,7 @@ export function Comparison() {
             Contexto <span className="text-gray">Comparativo</span>
           </h2>
           <p className="text-slate-300 max-w-2xl">
-            Cómo se compara Tenerife con las demás islas canarias en densidad vehicular,
+            Cómo se compara Tenerife con las demás islas en densidad vehicular,
             presión turística e inversión en infraestructuras.
           </p>
         </div>
@@ -41,40 +41,66 @@ export function Comparison() {
           </div>
         ) : data ? (
           <div className="space-y-6">
-            {/* Tourist pressure highlight */}
-            <div className="rounded-xl bg-brand-card border border-brand-border p-6">
-              <h3 className="text-lg font-semibold mb-4">Presión turística</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {(() => {
-                  const withRatio = data.islands
-                    .filter((i) => (i.tourist_resident_ratio || 0) > 0)
-                    .sort((a, b) => (b.tourist_resident_ratio || 0) - (a.tourist_resident_ratio || 0));
-                  const top3 = withRatio.slice(0, 3);
-                  const hasTenerife = top3.some((i) => i.island === 'Tenerife');
-                  const result = hasTenerife
-                    ? top3
-                    : [
-                        ...withRatio.filter((i) => i.island !== 'Tenerife').slice(0, 2),
-                        ...withRatio.filter((i) => i.island === 'Tenerife').slice(0, 1),
-                      ].sort((a, b) => (b.tourist_resident_ratio || 0) - (a.tourist_resident_ratio || 0));
-                  return result;
-                })().map((island, idx) => (
-                    <div
-                      key={island.island}
-                      className="rounded-lg bg-brand-surface border border-brand-border p-4 text-center"
-                    >
-                      <p className="text-xs text-slate-500 mb-1">
-                        {idx === 0 ? 'Mayor presión' : `#${idx + 1}`}
-                      </p>
-                      <p className="font-mono text-2xl font-bold text-yellow">
-                        {(island.tourist_resident_ratio || 0).toFixed(1)}x
-                      </p>
-                      <p className="text-sm font-medium mt-1">{island.island}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">turistas por habitante</p>
-                    </div>
-                  ))}
-              </div>
-            </div>
+            {/* Tourist pressure ranking — Top 10 */}
+            {(() => {
+              const ranked = data.islands
+                .filter((i) => (i.tourist_resident_ratio || 0) > 0)
+                .sort((a, b) => (b.tourist_resident_ratio || 0) - (a.tourist_resident_ratio || 0))
+                .slice(0, 10);
+
+              const maxRatio = ranked.length > 0 ? ranked[0].tourist_resident_ratio || 1 : 1;
+
+              return (
+                <div className="rounded-xl bg-brand-card border border-brand-border p-6">
+                  <h3 className="text-lg font-semibold mb-1">Ranking de presión turística</h3>
+                  <p className="text-xs text-slate-400 mb-5">
+                    Turistas por habitante · Top 10 islas · Fuente: ISTAC, INE
+                  </p>
+                  <div className="space-y-2">
+                    {ranked.map((island, idx) => {
+                      const isTenerife = island.island === 'Tenerife';
+                      const ratio = island.tourist_resident_ratio || 0;
+                      const barWidth = Math.max((ratio / maxRatio) * 100, 2);
+
+                      return (
+                        <div
+                          key={island.island}
+                          className={`flex items-center gap-3 rounded-lg px-3 py-2 ${
+                            isTenerife
+                              ? 'bg-red-accent/10 border border-red-accent/40'
+                              : 'bg-brand-surface/50'
+                          }`}
+                        >
+                          <span className={`font-mono text-xs w-6 text-right ${
+                            isTenerife ? 'text-red-accent font-bold' : 'text-slate-500'
+                          }`}>
+                            #{idx + 1}
+                          </span>
+                          <span className={`text-sm w-28 sm:w-36 truncate ${
+                            isTenerife ? 'font-bold text-red-accent' : 'font-medium'
+                          }`}>
+                            {island.island}
+                          </span>
+                          <div className="flex-1 h-5 bg-brand-bg rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${
+                                isTenerife ? 'bg-red-accent' : 'bg-yellow/70'
+                              }`}
+                              style={{ width: `${barWidth}%` }}
+                            />
+                          </div>
+                          <span className={`font-mono text-sm w-14 text-right ${
+                            isTenerife ? 'text-red-accent font-bold' : 'text-slate-300'
+                          }`}>
+                            {ratio.toFixed(1)}x
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
 
             <ComparisonChart islands={data.islands} />
             <ComparisonTable islands={data.islands} />

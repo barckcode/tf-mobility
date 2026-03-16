@@ -76,7 +76,14 @@ export function ComparisonTable({ islands }: ComparisonTableProps) {
                   </td>
                 </tr>
                 {group.islands.map((island) => (
-                  <tr key={island.island} className="border-b border-brand-border/50">
+                  <tr
+                    key={island.island}
+                    className={`border-b border-brand-border/50 ${
+                      island.island === 'Tenerife'
+                        ? 'bg-red-accent/5 border-l-2 border-l-red-accent'
+                        : ''
+                    }`}
+                  >
                     <td className="py-3 pr-4 font-medium">{island.island}</td>
                     <td className="py-3 pr-4 text-right text-slate-300 font-mono">
                       {(island.population || 0).toLocaleString('es-ES')}
@@ -123,7 +130,11 @@ export function ComparisonTable({ islands }: ComparisonTableProps) {
               {group.islands.map((island) => (
                 <div
                   key={island.island}
-                  className="rounded-lg border border-brand-border bg-brand-surface p-3"
+                  className={`rounded-lg p-3 ${
+                    island.island === 'Tenerife'
+                      ? 'border-2 border-red-accent/40 bg-red-accent/5'
+                      : 'border border-brand-border bg-brand-surface'
+                  }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium">{island.island}</span>
