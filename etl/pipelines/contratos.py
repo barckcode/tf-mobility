@@ -80,6 +80,76 @@ NAMESPACES = {
 # Regex to extract TF-XX road codes from contract descriptions
 ROAD_CODE_PATTERN = re.compile(r"TF-\d+", re.IGNORECASE)
 
+# ---------------------------------------------------------------------------
+# Mobility filter — keywords used to identify mobility-related contracts
+# ---------------------------------------------------------------------------
+_MOBILITY_KEYWORDS = [
+    # Road / infrastructure
+    "carretera", "autopista", "autovía", "autovia", "vial", "viario", "viaria",
+    "firme", "pavimento", "asfalto", "asfaltado", "calzada", "arcén", "arcen",
+    "glorieta", "rotonda", "intersección", "interseccion", "enlace",
+    "desdoblamiento", "variante", "circunvalación", "circunvalacion",
+    "tercer carril",
+    # Tunnels / bridges
+    "túnel", "tunel", "puente", "viaducto", "paso inferior", "paso superior",
+    "paso subterráneo", "paso subterraneo",
+    # Safety / signaling
+    "señalización", "senalizacion", "señalizacion", "seguridad vial",
+    "barrera", "iluminación vial", "iluminacion vial", "alumbrado",
+    "balizamiento",
+    # Transport
+    "transporte", "movilidad", "tráfico", "trafico", "aforo", "semáforo",
+    "semaforo", "estación de servicio",
+    # Public transport
+    "guagua", "autobús", "autobus", "tranvía", "tranvia", "tren ",
+    "ferrocarril", "ferroviario", "metro ", "metrotenerife", "titsa",
+    # Cycling / sustainable mobility
+    "carril bici", "ciclista", "bicicleta", "peatonal", "peatón", "peaton",
+    "senda", "acera",
+    # Road maintenance
+    "conservación de carretera", "conservacion de carretera",
+    "mantenimiento vial", "mantenimiento de la red", "red viaria",
+    "red insular",
+    # Parking
+    "aparcamiento", "estacionamiento", "parking",
+    # Soterramiento
+    "soterramiento",
+]
+
+# Geographic tokens that, combined with tipo=="obras", indicate a road project
+_ROAD_GEO_KEYWORDS = ["tramo", "km", "p.k.", "pk ", "kilómetro", "kilometro"]
+
+
+def _is_mobility_related(contract: dict) -> bool:
+    """Return True if the contract is related to mobility / roads / transport.
+
+    A contract qualifies when ANY of the following conditions is met:
+    1. It already has a ``carretera`` field (TF-XX road code detected).
+    2. Its ``objeto`` (lowercased) contains any mobility keyword.
+    3. Its ``tipo`` is "obras" AND the ``objeto`` contains geographic references
+       typical of road construction projects (tramo, km, p.k., etc.).
+    """
+    # Condition 1 — explicit road code
+    if contract.get("carretera"):
+        return True
+
+    objeto = (contract.get("objeto") or "").lower()
+    if not objeto:
+        return False
+
+    # Condition 2 — mobility keyword match (case-insensitive)
+    for kw in _MOBILITY_KEYWORDS:
+        if kw in objeto:
+            return True
+
+    # Condition 3 — "obras" with geographic road-project references
+    if contract.get("tipo") == "obras":
+        for geo in _ROAD_GEO_KEYWORDS:
+            if geo in objeto:
+                return True
+
+    return False
+
 # Map PLACSP status codes to our internal status values
 STATUS_MAP = {
     "PUB": "publicado",
@@ -482,6 +552,17 @@ def run() -> int:
     logger.info(
         f"Total unique contracts after deduplication: {len(unique_contracts)} "
         f"(from {len(all_contracts)} raw entries)"
+    )
+
+    # ---------- Mobility filter ----------
+    # Keep only contracts related to roads, transport, and mobility.
+    total_before = len(unique_contracts)
+    unique_contracts = [c for c in unique_contracts if _is_mobility_related(c)]
+    total_after = len(unique_contracts)
+    pct = (total_after / total_before * 100) if total_before else 0
+    logger.info(
+        f"Mobility filter: kept {total_after} of {total_before} contracts "
+        f"({pct:.1f}%)"
     )
 
     # Upsert into database

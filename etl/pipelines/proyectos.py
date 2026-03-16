@@ -25,11 +25,11 @@ PROJECTS = [
     {
         "nombre": "Tren del Sur (Santa Cruz - Costa Adeje)",
         "descripcion": (
-            "Rail corridor connecting Santa Cruz de Tenerife with Costa Adeje "
-            "along the southern coast. Approximately 80 km of track. Included in the "
-            "Plan de Movilidad Sostenible de Tenerife 2024-2035. Currently in "
-            "'estudio informativo' phase after decades of announcements. "
-            "This is the flagship transport project for the island."
+            "Corredor ferroviario que conectaría Santa Cruz de Tenerife con Costa Adeje "
+            "por la costa sur. Aproximadamente 80 km de vía. Incluido en el "
+            "Plan de Movilidad Sostenible de Tenerife 2024-2035. Actualmente en "
+            "fase de estudio informativo tras décadas de anuncios. "
+            "Es el proyecto de transporte estrella de la isla."
         ),
         "estado": "rojo",
         "fase": "planificacion",
@@ -40,19 +40,19 @@ PROJECTS = [
         "responsable": "Cabildo Insular de Tenerife",
         "url_fuente": "https://www.tenerife.es/portalcabtfe/es/site_content/541-movilidad",
         "notas": (
-            "Included in the Plan de Movilidad Sostenible de Tenerife 2024-2035. "
-            "Currently in 'estudio informativo' (preliminary study) phase. "
-            "No construction start date set. Funding dependent on national and EU budgets. "
-            "First announced decades ago; no physical construction has ever begun. "
-            "Estimated cost from the Plan de Movilidad: ~3,600M EUR."
+            "Incluido en el Plan de Movilidad Sostenible de Tenerife 2024-2035. "
+            "Actualmente en fase de estudio informativo (estudio preliminar). "
+            "Sin fecha de inicio de obras definida. Financiación dependiente de presupuestos "
+            "nacionales y europeos. Anunciado por primera vez hace décadas; nunca se ha "
+            "iniciado construcción física alguna. Coste estimado según el Plan de Movilidad: ~3.600M EUR."
         ),
     },
     {
         "nombre": "Tren del Norte (Santa Cruz - Los Realejos/Icod)",
         "descripcion": (
-            "Rail corridor connecting Santa Cruz de Tenerife with the northern coast, "
-            "serving La Laguna, Tacoronte, La Orotava, Puerto de la Cruz, and "
-            "Los Realejos/Icod. Approximately 50 km of track. Included in the "
+            "Corredor ferroviario que conectaría Santa Cruz de Tenerife con la costa norte, "
+            "dando servicio a La Laguna, Tacoronte, La Orotava, Puerto de la Cruz y "
+            "Los Realejos/Icod. Aproximadamente 50 km de vía. Incluido en el "
             "Plan de Movilidad Sostenible de Tenerife 2024-2035."
         ),
         "estado": "rojo",
@@ -64,19 +64,19 @@ PROJECTS = [
         "responsable": "Cabildo Insular de Tenerife",
         "url_fuente": "https://www.tenerife.es/portalcabtfe/es/site_content/541-movilidad",
         "notas": (
-            "Included in the Plan de Movilidad Sostenible de Tenerife 2024-2035. "
-            "A 'concurso de ideas' (ideas competition) was launched in 2025. "
-            "Less advanced than the Tren del Sur. No construction timeline defined. "
-            "Estimated cost from the Plan de Movilidad: ~2,100M EUR."
+            "Incluido en el Plan de Movilidad Sostenible de Tenerife 2024-2035. "
+            "Se lanzó un concurso de ideas en 2025. "
+            "Menos avanzado que el Tren del Sur. Sin calendario de obras definido. "
+            "Coste estimado según el Plan de Movilidad: ~2.100M EUR."
         ),
     },
     {
         "nombre": "Anillo Insular (3 tramos pendientes)",
         "descripcion": (
-            "Completion of the island ring road connecting the northern and southern "
-            "motorway networks. Three key pending sections through complex terrain "
-            "in the north and east coasts. Includes tunnels and viaducts. "
-            "Part of the Plan de Movilidad Sostenible de Tenerife."
+            "Cierre del anillo insular que conecta las redes de autopistas del norte y del sur. "
+            "Tres tramos clave pendientes a través de terreno complejo "
+            "en las costas norte y este. Incluye túneles y viaductos. "
+            "Forma parte del Plan de Movilidad Sostenible de Tenerife."
         ),
         "estado": "amarillo",
         "fase": "planificacion",
@@ -87,20 +87,20 @@ PROJECTS = [
         "responsable": "Cabildo Insular de Tenerife",
         "url_fuente": "https://www.tenerife.es/portalcabtfe/es/site_content/541-movilidad",
         "notas": (
-            "Three pending sections to complete the island ring road. "
-            "In project/planning phase per the Plan de Movilidad Sostenible. "
-            "Environmental challenges due to protected natural areas along the route. "
-            "Critical connection between TF-1 and TF-5 through the north coast. "
-            "Estimated total cost: ~1,200M EUR."
+            "Tres tramos pendientes para completar el anillo insular. "
+            "En fase de proyecto/planificación según el Plan de Movilidad Sostenible. "
+            "Desafíos medioambientales por espacios naturales protegidos a lo largo del trazado. "
+            "Conexión crítica entre TF-1 y TF-5 por la costa norte. "
+            "Coste total estimado: ~1.200M EUR."
         ),
     },
     {
         "nombre": "Tercer Carril TF-5 (Santa Cruz - La Laguna)",
         "descripcion": (
-            "Addition of a third lane on the TF-5 motorway between Santa Cruz de "
-            "Tenerife and San Cristobal de La Laguna. This is one of the most "
-            "congested road stretches on the island, handling over 120,000 vehicles "
-            "per day. Partially in active construction."
+            "Ampliación a un tercer carril de la autopista TF-5 entre Santa Cruz de "
+            "Tenerife y San Cristóbal de La Laguna. Es uno de los tramos viarios más "
+            "congestionados de la isla, con más de 120.000 vehículos "
+            "diarios. Parcialmente en construcción activa."
         ),
         "estado": "verde",
         "fase": "ejecucion",
@@ -111,20 +111,20 @@ PROJECTS = [
         "responsable": "Cabildo Insular de Tenerife",
         "url_fuente": "https://www.tenerife.es/portalcabtfe/es/site_content/156-carreteras",
         "notas": (
-            "Partially in execution. Construction underway with traffic management "
-            "plans in effect. Includes improvements to multiple interchanges. "
-            "Funded partially by Cabildo budget and FDCAN (Fondo de Desarrollo de Canarias). "
-            "Estimated cost: ~85M EUR. One of the few major projects with actual "
-            "physical construction in progress."
+            "Parcialmente en ejecución. Obras en curso con planes de gestión del tráfico "
+            "en vigor. Incluye mejoras en varios enlaces e intercambiadores. "
+            "Financiado parcialmente con presupuesto del Cabildo y FDCAN (Fondo de Desarrollo de Canarias). "
+            "Coste estimado: ~85M EUR. Uno de los pocos grandes proyectos con "
+            "construcción física realmente en marcha."
         ),
     },
     {
         "nombre": "Soterramiento TF-1 Adeje (Fañabe - La Caleta)",
         "descripcion": (
-            "Underground bypass of the TF-1 motorway through the Adeje - Costa Adeje "
-            "corridor. Tunnel section designed to free surface land for urban "
-            "development and reduce noise and visual impact in the main tourist area "
-            "of southern Tenerife."
+            "Soterramiento de la autopista TF-1 en el corredor Adeje - Costa Adeje. "
+            "Tramo en túnel diseñado para liberar suelo en superficie para desarrollo "
+            "urbanístico y reducir el impacto acústico y visual en la principal zona turística "
+            "del sur de Tenerife."
         ),
         "estado": "amarillo",
         "fase": "licitacion",
@@ -135,18 +135,18 @@ PROJECTS = [
         "responsable": "Cabildo Insular de Tenerife",
         "url_fuente": "https://www.tenerife.es/portalcabtfe/es/site_content/541-movilidad",
         "notas": (
-            "In project redaction phase. Included in the Plan de Movilidad Sostenible "
-            "and Cabildo announcements. Key project for tourism infrastructure in the "
-            "southern coast. Estimated cost: ~320M EUR. No construction start date "
-            "officially confirmed."
+            "En fase de redacción de proyecto. Incluido en el Plan de Movilidad Sostenible "
+            "y en anuncios del Cabildo. Proyecto clave para la infraestructura turística de la "
+            "costa sur. Coste estimado: ~320M EUR. Sin fecha de inicio de obras "
+            "confirmada oficialmente."
         ),
     },
     {
         "nombre": "Rehabilitacion TF-1 Sur (tramo Arico - Guimar)",
         "descripcion": (
-            "Rehabilitation of the TF-1 motorway in the stretch between Arico and "
-            "Guimar. Includes road surface renewal, drainage improvements, barrier "
-            "upgrades, and signage modernization."
+            "Rehabilitación de la autopista TF-1 en el tramo entre Arico y "
+            "Güímar. Incluye renovación del firme, mejoras de drenaje, actualización "
+            "de barreras de seguridad y modernización de la señalización."
         ),
         "estado": "verde",
         "fase": "ejecucion",
@@ -157,18 +157,18 @@ PROJECTS = [
         "responsable": "Cabildo Insular de Tenerife",
         "url_fuente": "https://www.tenerife.es/portalcabtfe/es/site_content/156-carreteras",
         "notas": (
-            "In execution. Budget approximately 30M EUR. Works include road surface "
-            "renewal and safety improvements. Night works scheduled to minimize "
-            "traffic impact on the southern motorway corridor."
+            "En ejecución. Presupuesto aproximado de 30M EUR. Las obras incluyen renovación "
+            "del firme y mejoras de seguridad vial. Trabajos nocturnos programados para minimizar "
+            "el impacto en el tráfico del corredor sur de autopistas."
         ),
     },
     {
         "nombre": "Mejora 21 carreteras insulares (75 km)",
         "descripcion": (
-            "Comprehensive improvement plan for 21 insular roads across Tenerife, "
-            "covering approximately 75 km total. Includes maintenance, safety upgrades, "
-            "widening, and curve corrections on secondary island roads managed by "
-            "the Cabildo. Announced July 2025."
+            "Plan integral de mejora de 21 carreteras insulares de Tenerife, "
+            "que abarca aproximadamente 75 km en total. Incluye mantenimiento, mejoras de seguridad, "
+            "ensanchamientos y correcciones de curvas en carreteras insulares secundarias gestionadas "
+            "por el Cabildo. Anunciado en julio de 2025."
         ),
         "estado": "amarillo",
         "fase": "licitacion",
@@ -179,19 +179,19 @@ PROJECTS = [
         "responsable": "Cabildo Insular de Tenerife",
         "url_fuente": "https://www.tenerife.es/portalcabtfe/es/site_content/156-carreteras",
         "notas": (
-            "Announced by Cabildo de Tenerife in July 2025. Contract awarded "
-            "(adjudicado), with execution planned for 2026-2027. Covers 21 insular "
-            "roads totaling approximately 75 km of improvements. "
-            "Estimated budget: ~180M EUR."
+            "Anunciado por el Cabildo de Tenerife en julio de 2025. Contrato adjudicado, "
+            "con ejecución prevista para 2026-2027. Abarca 21 carreteras insulares "
+            "con un total aproximado de 75 km de mejoras. "
+            "Presupuesto estimado: ~180M EUR."
         ),
     },
     {
         "nombre": "Sistema de camaras IA y gestion de trafico",
         "descripcion": (
-            "AI-powered camera system for traffic monitoring and management across "
-            "the island's main road network. Includes smart cameras with analytics "
-            "for incident detection, traffic counting, speed monitoring, and "
-            "congestion prediction."
+            "Sistema de cámaras con inteligencia artificial para la monitorización y gestión "
+            "del tráfico en la red viaria principal de la isla. Incluye cámaras inteligentes con "
+            "analítica para detección de incidentes, conteo de tráfico, control de velocidad y "
+            "predicción de congestión."
         ),
         "estado": "amarillo",
         "fase": "planificacion",
@@ -202,17 +202,17 @@ PROJECTS = [
         "responsable": "Cabildo Insular de Tenerife",
         "url_fuente": "https://www.tenerife.es/portalcabtfe/es/site_content/178-transparencia",
         "notas": (
-            "Included in the Presupuestos del Cabildo de Tenerife 2026. "
-            "In budget allocation phase. Technical specifications being defined. "
-            "Integration planned with the island's traffic management center."
+            "Incluido en los Presupuestos del Cabildo de Tenerife 2026. "
+            "En fase de asignación presupuestaria. Especificaciones técnicas en definición. "
+            "Integración prevista con el centro de gestión del tráfico insular."
         ),
     },
     {
         "nombre": "Iluminacion progresiva autopistas",
         "descripcion": (
-            "Progressive LED lighting installation on the TF-1 and TF-5 motorways. "
-            "Replacement of existing lighting with energy-efficient LED technology "
-            "including adaptive brightness based on traffic conditions."
+            "Instalación progresiva de iluminación LED en las autopistas TF-1 y TF-5. "
+            "Sustitución del alumbrado existente por tecnología LED de alta eficiencia energética "
+            "con luminosidad adaptativa según las condiciones del tráfico."
         ),
         "estado": "amarillo",
         "fase": "planificacion",
@@ -223,17 +223,17 @@ PROJECTS = [
         "responsable": "Cabildo Insular de Tenerife",
         "url_fuente": "https://www.tenerife.es/portalcabtfe/es/site_content/178-transparencia",
         "notas": (
-            "Included in the Presupuestos del Cabildo de Tenerife 2026. "
-            "In budget phase. Expected to deliver significant energy cost reduction "
-            "on the main motorway network."
+            "Incluido en los Presupuestos del Cabildo de Tenerife 2026. "
+            "En fase presupuestaria. Se espera que genere una reducción significativa del coste "
+            "energético en la red principal de autopistas."
         ),
     },
     {
         "nombre": "Variante de Tacoronte (TF-152/TF-5)",
         "descripcion": (
-            "Road variant connecting TF-152 with TF-5 in the Tacoronte area. "
-            "Designed to reduce traffic congestion through the town center and "
-            "improve connectivity between the northern coast and the motorway network."
+            "Variante viaria que conecta la TF-152 con la TF-5 en la zona de Tacoronte. "
+            "Diseñada para reducir la congestión del tráfico en el casco urbano y "
+            "mejorar la conectividad entre la costa norte y la red de autopistas."
         ),
         "estado": "amarillo",
         "fase": "licitacion",
@@ -244,9 +244,9 @@ PROJECTS = [
         "responsable": "Cabildo Insular de Tenerife",
         "url_fuente": "https://www.tenerife.es/portalcabtfe/es/site_content/156-carreteras",
         "notas": (
-            "In project/bidding phase. The Variante de Tacoronte has been a long-standing "
-            "demand from residents dealing with heavy traffic through the town center. "
-            "Managed by the Cabildo de Tenerife road department."
+            "En fase de proyecto/licitación. La Variante de Tacoronte es una demanda histórica "
+            "de los vecinos, que sufren un tráfico intenso a través del casco urbano. "
+            "Gestionado por el área de carreteras del Cabildo de Tenerife."
         ),
     },
 ]

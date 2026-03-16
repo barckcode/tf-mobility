@@ -29,16 +29,16 @@ ALTERNATIVES = [
         "cobertura": "Area metropolitana Santa Cruz - La Laguna",
         "usuarios_anuales": 16000000,
         "dato_clave": (
-            "~16M passengers/year. Linea 1: Santa Cruz - La Laguna (12.5 km, 21 stops). "
-            "Linea 2: La Cuesta - Tincer (3.6 km, 6 stops). Only rail-based "
-            "public transport in the Canary Islands."
+            "~16M pasajeros/año. Línea 1: Santa Cruz - La Laguna (12,5 km, 21 paradas). "
+            "Línea 2: La Cuesta - Tincer (3,6 km, 6 paradas). Único transporte público "
+            "ferroviario de Canarias."
         ),
         "descripcion": (
-            "Light rail system connecting Santa Cruz de Tenerife and San Cristobal "
-            "de La Laguna. Line 1 opened in 2007, Line 2 in 2009. Operates daily "
-            "approximately 6:00-0:00. Frequency: 5-10 min at peak, 15 min off-peak. "
-            "The only tram system in the Canary Islands. Managed by "
-            "Metrotenerife S.A., a public company of the Cabildo de Tenerife."
+            "Sistema de tranvía que conecta Santa Cruz de Tenerife y San Cristóbal "
+            "de La Laguna. Línea 1 inaugurada en 2007, Línea 2 en 2009. Funciona a diario "
+            "aproximadamente de 6:00 a 0:00. Frecuencia: 5-10 min en hora punta, 15 min fuera de punta. "
+            "El único sistema tranviario de Canarias. Gestionado por "
+            "Metrotenerife S.A., empresa pública del Cabildo de Tenerife."
         ),
         "color": "#16C79A",
         "icono": "tram",
@@ -52,17 +52,17 @@ ALTERNATIVES = [
         "cobertura": "Red insular completa",
         "usuarios_anuales": 50000000,
         "dato_clave": (
-            "~50M passengers/year. 100+ lines covering the entire island. "
-            "Free rides program active via Gobierno de Canarias subsidy. "
-            "Integrated ticketing with TenMas card."
+            "~50M pasajeros/año. Más de 100 líneas que cubren toda la isla. "
+            "Programa de gratuidad activo mediante subvención del Gobierno de Canarias. "
+            "Billetaje integrado con tarjeta TenMas."
         ),
         "descripcion": (
-            "Comprehensive intercity and urban bus network operated by TITSA, "
-            "the largest public transport operator in Tenerife. Over 100 lines "
-            "covering all municipalities. Main hubs: Santa Cruz, La Laguna, "
-            "Puerto de la Cruz, Los Cristianos, Costa Adeje. Heavily subsidized "
-            "fares since 2022 (Gobierno de Canarias free transport subsidy). "
-            "Uses TenMas integrated ticketing card."
+            "Red integral de guaguas interurbanas y urbanas operada por TITSA, "
+            "el mayor operador de transporte público de Tenerife. Más de 100 líneas "
+            "que cubren todos los municipios. Principales nodos: Santa Cruz, La Laguna, "
+            "Puerto de la Cruz, Los Cristianos, Costa Adeje. Tarifas fuertemente subvencionadas "
+            "desde 2022 (subvención de transporte gratuito del Gobierno de Canarias). "
+            "Utiliza la tarjeta de billetaje integrado TenMas."
         ),
         "color": "#16C79A",
         "icono": "bus",
@@ -76,15 +76,15 @@ ALTERNATIVES = [
         "cobertura": "Zonas de medianias (rural)",
         "usuarios_anuales": 13000,
         "dato_clave": (
-            "13,000+ users. Demand-responsive transport for rural highland areas "
-            "poorly served by conventional bus routes. Active in 4+ zones."
+            "Más de 13.000 usuarios. Transporte a demanda para zonas rurales de medianías "
+            "mal atendidas por las líneas convencionales de guaguas. Activo en más de 4 zonas."
         ),
         "descripcion": (
-            "Demand-responsive transport service for rural and highland areas "
-            "(medianias) poorly served by conventional bus routes. Users book "
-            "trips via app or phone. Launched 2021, expanded to 4+ zones by 2024. "
-            "Serves areas including Anaga, Teno, and rural hill zones. "
-            "Key service for elderly and mobility-reduced populations."
+            "Servicio de transporte a demanda para zonas rurales y de medianías "
+            "mal atendidas por las líneas convencionales de guaguas. Los usuarios reservan "
+            "viajes mediante app o teléfono. Lanzado en 2021, ampliado a más de 4 zonas en 2024. "
+            "Da servicio a zonas como Anaga, Teno y áreas rurales de medianías. "
+            "Servicio clave para personas mayores y con movilidad reducida."
         ),
         "color": "#16C79A",
         "icono": "demand",
@@ -98,16 +98,16 @@ ALTERNATIVES = [
         "cobertura": "Santa Cruz - Costa Adeje (proyecto)",
         "usuarios_anuales": 0,
         "dato_clave": (
-            "Estimated first section: Santa Cruz - Adeje, ~80 km. "
-            "Budget: ~3,600M EUR (Plan de Movilidad estimate). "
-            "Currently in 'estudio informativo' phase. No construction date set."
+            "Primer tramo estimado: Santa Cruz - Adeje, ~80 km. "
+            "Presupuesto: ~3.600M EUR (estimación del Plan de Movilidad). "
+            "Actualmente en fase de estudio informativo. Sin fecha de inicio de obras."
         ),
         "descripcion": (
-            "Major rail project connecting Santa Cruz with the tourist south coast. "
-            "Included in the Plan de Movilidad Sostenible de Tenerife 2024-2035. "
-            "First announced decades ago, currently in preliminary study phase. "
-            "No physical construction has ever begun. Funding dependent on "
-            "national and EU budgets."
+            "Gran proyecto ferroviario que conectaría Santa Cruz con la costa sur turística. "
+            "Incluido en el Plan de Movilidad Sostenible de Tenerife 2024-2035. "
+            "Anunciado por primera vez hace décadas, actualmente en fase de estudio preliminar. "
+            "Nunca se ha iniciado construcción física alguna. Financiación dependiente de "
+            "presupuestos nacionales y europeos."
         ),
         "color": "#F5A623",
         "icono": "train",
@@ -121,15 +121,15 @@ ALTERNATIVES = [
         "cobertura": "Santa Cruz - Los Realejos (proyecto)",
         "usuarios_anuales": 0,
         "dato_clave": (
-            "Estimated: Santa Cruz - Los Realejos, ~50 km. "
-            "Budget: ~2,100M EUR. Ideas competition (concurso de ideas) "
-            "launched in 2025. Less advanced than Tren del Sur."
+            "Estimado: Santa Cruz - Los Realejos, ~50 km. "
+            "Presupuesto: ~2.100M EUR. Concurso de ideas "
+            "lanzado en 2025. Menos avanzado que el Tren del Sur."
         ),
         "descripcion": (
-            "Rail project connecting Santa Cruz with the north coast via "
-            "La Laguna, Tacoronte, and the Orotava Valley. Included in the "
+            "Proyecto ferroviario que conectaría Santa Cruz con la costa norte vía "
+            "La Laguna, Tacoronte y el Valle de La Orotava. Incluido en el "
             "Plan de Movilidad Sostenible de Tenerife 2024-2035. "
-            "Ideas competition launched in 2025. Conceptual phase."
+            "Concurso de ideas lanzado en 2025. En fase conceptual."
         ),
         "color": "#F5A623",
         "icono": "train",
@@ -143,16 +143,16 @@ ALTERNATIVES = [
         "cobertura": "Fragmentada, sin red continua",
         "usuarios_anuales": 0,
         "dato_clave": (
-            "No continuous island-wide cycle network. Fragmented segments in "
-            "some municipalities (Santa Cruz, La Laguna, Adeje, Arona). "
-            "Terrain and climate are significant barriers."
+            "Sin red ciclista continua a nivel insular. Tramos fragmentados en "
+            "algunos municipios (Santa Cruz, La Laguna, Adeje, Arona). "
+            "El relieve y el clima son barreras significativas."
         ),
         "descripcion": (
-            "Cycling infrastructure in Tenerife is fragmented and insufficient. "
-            "Some municipalities have built short segments, but there is no "
-            "continuous network connecting major population centers. Steep terrain "
-            "and heat in the south are additional barriers. E-bike rentals "
-            "are growing in tourist areas but remain niche."
+            "La infraestructura ciclista en Tenerife es fragmentada e insuficiente. "
+            "Algunos municipios han construido tramos cortos, pero no existe una "
+            "red continua que conecte los principales núcleos de población. El relieve "
+            "pronunciado y el calor en el sur son barreras adicionales. El alquiler de bicicletas "
+            "eléctricas crece en zonas turísticas, pero sigue siendo minoritario."
         ),
         "color": "#E94560",
         "icono": "bike",
@@ -166,15 +166,15 @@ ALTERNATIVES = [
         "cobertura": "Zona turistica sur + area metropolitana",
         "usuarios_anuales": 0,
         "dato_clave": (
-            "Uber arrived in Tenerife recently. Growing presence in tourist areas "
-            "of the south coast and the metropolitan area. Supplements taxi service."
+            "Uber llegó recientemente a Tenerife. Presencia creciente en las zonas turísticas "
+            "de la costa sur y el área metropolitana. Complementa el servicio de taxi."
         ),
         "descripcion": (
-            "Ride-hailing services (VTC - Vehiculo de Turismo con Conductor) "
-            "have recently become available in Tenerife. Growing presence "
-            "especially in the tourist zones of the south coast (Los Cristianos, "
-            "Costa Adeje, Las Americas) and the Santa Cruz - La Laguna "
-            "metropolitan area. Regulatory framework still evolving."
+            "Los servicios de VTC (Vehículo de Turismo con Conductor) "
+            "están disponibles en Tenerife desde hace poco. Presencia creciente "
+            "especialmente en las zonas turísticas de la costa sur (Los Cristianos, "
+            "Costa Adeje, Las Américas) y el área metropolitana de Santa Cruz - La Laguna. "
+            "El marco regulatorio sigue en evolución."
         ),
         "color": "#6C757D",
         "icono": "vtc",
