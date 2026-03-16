@@ -108,8 +108,9 @@ def _parse_istac_response(data: dict) -> list[dict]:
             continue
 
         for geo_code, geo_idx in geo_index_map.items():
-            # Calculate flat array index
-            obs_index = geo_idx + (time_idx * num_geo) + (measure_idx * num_geo * num_time)
+            # Calculate flat array index — ISTAC uses time-major order:
+            # obs[time_idx + geo_idx * num_time + measure_idx * num_time * num_geo]
+            obs_index = time_idx + (geo_idx * num_time) + (measure_idx * num_time * num_geo)
 
             if obs_index >= len(observations):
                 logger.debug(f"Index {obs_index} out of range for {geo_code}/{time_code}")
