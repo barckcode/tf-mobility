@@ -11,6 +11,7 @@ from app.schemas.projects import (
     ProjectsSummary,
     ProjectsListResponse,
 )
+from app.schemas.freshness import PipelineFreshness, FreshnessResponse
 
 __all__ = [
     "StatsResponse",
@@ -22,4 +23,6 @@ __all__ = [
     "ProjectResponse",
     "ProjectsSummary",
     "ProjectsListResponse",
+    "PipelineFreshness",
+    "FreshnessResponse",
 ]

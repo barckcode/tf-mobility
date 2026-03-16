@@ -119,3 +119,20 @@ export interface IslandComparison {
 export interface ComparisonResponse {
   islands: IslandComparison[];
 }
+
+// Metadata — Data freshness
+export interface PipelineFreshness {
+  pipeline: string;
+  last_success: string | null;
+  last_run: string | null;
+  last_status: string;
+  records_processed: number;
+  days_since_update: number | null;
+  freshness: string; // "fresh" | "stale" | "outdated" | "unknown"
+}
+
+export interface FreshnessResponse {
+  pipelines: PipelineFreshness[];
+  overall_freshness: string;
+  last_etl_run: string | null;
+}

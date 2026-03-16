@@ -7,6 +7,7 @@ import type {
   TourismResponse,
   AlternativesResponse,
   ComparisonResponse,
+  FreshnessResponse,
 } from '@/types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -61,4 +62,8 @@ export async function getAlternatives(): Promise<AlternativesResponse> {
 
 export async function getComparison(): Promise<ComparisonResponse> {
   return fetchJSON<ComparisonResponse>(`${API_BASE}/comparison`);
+}
+
+export async function getFreshness(): Promise<FreshnessResponse> {
+  return fetchJSON<FreshnessResponse>(`${API_BASE}/metadata/freshness`);
 }

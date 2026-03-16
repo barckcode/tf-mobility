@@ -6,6 +6,7 @@ import { Promises } from '@/components/Promises/Promises';
 import { Alternatives } from '@/components/Alternatives/Alternatives';
 import { Comparison } from '@/components/Comparison/Comparison';
 import { Footer } from '@/components/Footer/Footer';
+import { DataFreshness } from '@/components/DataFreshness/DataFreshness';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Alternatives />
         <Comparison />
       </main>
+      <DataFreshness />
       <Footer />
     </div>
   );

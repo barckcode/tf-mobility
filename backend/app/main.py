@@ -9,6 +9,7 @@ from app.routers import (
     tourism_router,
     alternatives_router,
     comparison_router,
+    freshness_router,
 )
 
 app = FastAPI(
@@ -31,6 +32,7 @@ app.include_router(projects_router, prefix=settings.api_v1_prefix)
 app.include_router(tourism_router, prefix=settings.api_v1_prefix)
 app.include_router(alternatives_router, prefix=settings.api_v1_prefix)
 app.include_router(comparison_router, prefix=settings.api_v1_prefix)
+app.include_router(freshness_router, prefix=settings.api_v1_prefix)
 
 
 @app.get(f"{settings.api_v1_prefix}/health")

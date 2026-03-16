@@ -4,6 +4,7 @@ from app.models.estadistica import EstadisticaClave
 from app.models.turismo import TurismoMensual
 from app.models.empresa import Empresa
 from app.models.carretera import Carretera
+from app.models.etl_run import EtlRun
 
 __all__ = [
     "Contrato",
@@ -12,4 +13,5 @@ __all__ = [
     "TurismoMensual",
     "Empresa",
     "Carretera",
+    "EtlRun",
 ]
