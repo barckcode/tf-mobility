@@ -9,8 +9,9 @@ import argparse
 import logging
 import sys
 import time
+from datetime import datetime, timezone
 
-from db import init_db
+from db import init_db, EtlRun, get_session
 
 logging.basicConfig(
     level=logging.INFO,
@@ -21,6 +22,27 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 THIRTY_DAYS = 30 * 24 * 60 * 60  # seconds
+
+
+def _record_etl_run(pipeline, status, records, started, error=None):
+    """Record an ETL pipeline execution in the etl_runs table."""
+    session = get_session()
+    try:
+        run = EtlRun(
+            pipeline=pipeline,
+            status=status,
+            records_processed=records,
+            started_at=started,
+            finished_at=datetime.now(timezone.utc),
+            error_message=error,
+        )
+        session.add(run)
+        session.commit()
+    except Exception as e:
+        logger.error(f"Failed to record ETL run for {pipeline}: {e}")
+        session.rollback()
+    finally:
+        session.close()
 
 
 def run_all():
@@ -54,12 +76,15 @@ def run_all():
 
     results = {}
     for name, pipeline_fn in pipelines:
+        started = datetime.now(timezone.utc)
         try:
             logger.info(f"--- Running pipeline: {name} ---")
             count = pipeline_fn()
+            _record_etl_run(name, "success", count, started)
             results[name] = {"status": "success", "records": count}
             logger.info(f"Pipeline {name} completed: {count} records")
         except Exception as e:
+            _record_etl_run(name, "error", 0, started, str(e))
             logger.error(f"Pipeline {name} failed: {e}", exc_info=True)
             results[name] = {"status": "error", "error": str(e)}
 

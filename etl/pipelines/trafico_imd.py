@@ -167,7 +167,12 @@ def _parse_imd_json(data: dict, year: int) -> list[dict]:
                 if estacion_id is None:
                     continue
 
-                valores = station.get("valores", {})
+                raw_valores = station.get("valores", {})
+                # valores can be a list (with one dict) or a dict directly
+                if isinstance(raw_valores, list):
+                    valores = raw_valores[0] if raw_valores else {}
+                else:
+                    valores = raw_valores
 
                 record = {
                     "anio": year,

@@ -57,32 +57,36 @@ def _parse_istac_response(data: dict) -> list[dict]:
     observations = data["observation"]
 
     # Extract dimension representations
-    geo_dim = data["dimension"].get("GEOGRAPHICAL", {}).get("representation", [])
-    time_dim = data["dimension"].get("TIME", {}).get("representation", [])
-    measure_dim = data["dimension"].get("MEASURE", {}).get("representation", [])
+    # ISTAC API returns representation as {"size": N, "index": {"CODE": position}}
+    geo_rep = data["dimension"].get("GEOGRAPHICAL", {}).get("representation", {})
+    time_rep = data["dimension"].get("TIME", {}).get("representation", {})
+    measure_rep = data["dimension"].get("MEASURE", {}).get("representation", {})
 
-    num_geo = len(geo_dim)
-    num_time = len(time_dim)
+    # Handle both dict format {"index": {...}, "size": N} and list format [{...}, ...]
+    if isinstance(geo_rep, dict):
+        geo_index_map = geo_rep.get("index", {})
+        num_geo = geo_rep.get("size", len(geo_index_map))
+    else:
+        geo_index_map = {item.get("granularId") or item.get("code", ""): item.get("index", i) for i, item in enumerate(geo_rep)}
+        num_geo = len(geo_rep)
 
-    # Build index maps: granularId -> position index
-    geo_index_map = {}
-    for item in geo_dim:
-        code = item.get("granularId") or item.get("code", "")
-        idx = item.get("index", 0)
-        geo_index_map[code] = idx
+    if isinstance(time_rep, dict):
+        time_index_map = time_rep.get("index", {})
+        num_time = time_rep.get("size", len(time_index_map))
+    else:
+        time_index_map = {item.get("granularId") or item.get("code", ""): item.get("index", i) for i, item in enumerate(time_rep)}
+        num_time = len(time_rep)
 
-    time_index_map = {}
-    for item in time_dim:
-        code = item.get("granularId") or item.get("code", "")
-        idx = item.get("index", 0)
-        time_index_map[code] = idx
+    if isinstance(measure_rep, dict):
+        measure_index = measure_rep.get("index", {})
+    else:
+        measure_index = {item.get("granularId") or item.get("code", ""): item.get("index", i) for i, item in enumerate(measure_rep)}
 
     # Find the ABSOLUTE measure index (usually 0 if we filtered, but be safe)
     measure_idx = 0
-    for item in measure_dim:
-        code = item.get("granularId") or item.get("code", "")
+    for code, idx in measure_index.items():
         if "ABSOLUTE" in code.upper():
-            measure_idx = item.get("index", 0)
+            measure_idx = idx
             break
 
     # Iterate over all geo/time combinations
