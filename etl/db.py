@@ -2,7 +2,7 @@
 
 import os
 import logging
-from sqlalchemy import create_engine, Column, Integer, String, Float, Text, Date, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, Float, Text, Date, DateTime, UniqueConstraint
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 logger = logging.getLogger(__name__)
@@ -102,6 +102,27 @@ class Empresa(Base):
     importe_total = Column(Float, default=0.0)
 
 
+class EstacionAforo(Base):
+    """Traffic counting station data from datos.tenerife.es IMD datasets."""
+    __tablename__ = "estaciones_aforo"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    anio = Column(Integer, nullable=False)
+    carretera = Column(String(20))  # TF-1, TF-5, etc.
+    tramo = Column(String(200))
+    estacion_id = Column(Integer, nullable=False)
+    estacion_nombre = Column(String(200))
+    imd_total = Column(Integer)
+    imd_ascendentes = Column(Float)
+    imd_descendentes = Column(Float)
+    imd_pesados = Column(Integer)
+    velocidad_media = Column(Float)
+
+    __table_args__ = (
+        UniqueConstraint("anio", "estacion_id", name="uq_estacion_anio"),
+    )
+
+
 class Alternativa(Base):
     __tablename__ = "alternativas"
 
@@ -137,6 +158,19 @@ class ComparativaIsla(Base):
     tiene_tranvia = Column(String(10))
     regulacion_trafico = Column(String(200))
     fuente = Column(String(200))
+
+
+class EtlRun(Base):
+    """Tracks ETL pipeline execution history for data freshness monitoring."""
+    __tablename__ = "etl_runs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    pipeline = Column(String(100), nullable=False)  # turismo, contratos, estadisticas, etc.
+    status = Column(String(20), nullable=False)  # success, error
+    records_processed = Column(Integer, default=0)
+    started_at = Column(DateTime, nullable=False)
+    finished_at = Column(DateTime)
+    error_message = Column(Text)
 
 
 def init_db():

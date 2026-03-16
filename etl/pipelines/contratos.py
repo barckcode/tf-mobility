@@ -1,412 +1,379 @@
-"""Pipeline: Seed contracts data from Plataforma de Contratación del Sector Público.
+"""Pipeline: Fetch public contracts from PLACSP (Plataforma de Contratacion del Sector Publico).
 
-Data modeled after real contracts published by Cabildo de Tenerife on:
-- https://contrataciondelestado.es (PLACSP)
-- https://sede.tenerife.es/sede/perfil-contratante
+Real data source:
+- PLACSP ATOM/XML feeds: https://contrataciondelsectorpublico.gob.es/
+- Monthly and annual ZIP files containing XML entries for all published contracts.
+- Filtered by Cabildo Insular de Tenerife (NIF: P3800001D).
 
-Contract types and amounts reflect actual public infrastructure procurement
-patterns for insular road network (TF-*) managed by Cabildo de Tenerife.
+Contract data includes licitaciones (tenders) and adjudicaciones (awards).
 """
 
 import logging
-from datetime import date
-
-import sys
 import os
+import re
+import sys
+import tempfile
+import zipfile
+from datetime import date, datetime
+from io import BytesIO
+from typing import Optional
+
+from lxml import etree
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from db import get_session, Contrato, Empresa
+from utils import create_http_session, download_file
 
 logger = logging.getLogger(__name__)
 
-# Contracts data based on real public procurement patterns from Cabildo de Tenerife
-CONTRACTS = [
-    {
-        "expediente": "OB-2023/0145",
-        "objeto": "Obras de mejora y acondicionamiento de la carretera TF-28, tramo Granadilla - San Isidro",
-        "tipo": "obras",
+# PLACSP feed URL templates
+PLACSP_ANNUAL_ZIP_URL = (
+    "https://contrataciondelsectorpublico.gob.es/sindicacion/sindicacion_643"
+    "/licitacionesPerfilesContratanteCompleto3_{year}.zip"
+)
+PLACSP_MONTHLY_ZIP_URL = (
+    "https://contrataciondelsectorpublico.gob.es/sindicacion/sindicacion_643"
+    "/licitacionesPerfilesContratanteCompleto3_{yearmonth}.zip"
+)
+
+# Cabildo Insular de Tenerife identification
+CABILDO_TENERIFE_NIF = "P3800001D"
+CABILDO_TENERIFE_NAME_PATTERNS = ["cabildo", "tenerife"]
+
+# Years to fetch on initial load
+INITIAL_LOAD_YEARS = [2022, 2023, 2024, 2025, 2026]
+
+# XML namespaces used in PLACSP feeds
+NAMESPACES = {
+    "atom": "http://www.w3.org/2005/Atom",
+    "cbc": "urn:dgpe:names:draft:codice:schema:xsd:CommonBasicComponents-2",
+    "cac": "urn:dgpe:names:draft:codice:schema:xsd:CommonAggregateComponents-2",
+    "cbc-place-ext": "urn:dgpe:names:draft:codice-place-ext:schema:xsd:CommonBasicComponents-2",
+    "cac-place-ext": "urn:dgpe:names:draft:codice-place-ext:schema:xsd:CommonAggregateComponents-2",
+}
+
+# Regex to extract TF-XX road codes from contract descriptions
+ROAD_CODE_PATTERN = re.compile(r"TF-\d+", re.IGNORECASE)
+
+# Map PLACSP status codes to our internal status values
+STATUS_MAP = {
+    "PUB": "publicado",
+    "EV": "en_evaluacion",
+    "PRE": "preadjudicado",
+    "ADJ": "adjudicado",
+    "RES": "resuelto",
+    "DES": "desierto",
+    "ANUL": "anulado",
+    "ANU": "anulado",
+}
+
+# Map PLACSP type codes to our internal type values
+TYPE_MAP = {
+    "1": "obras",
+    "2": "servicios",
+    "3": "suministros",
+    "21": "servicios",
+    "31": "mixto",
+}
+
+
+def _text(element, xpath: str, namespaces: dict = NAMESPACES) -> Optional[str]:
+    """Safely extract text from an XML element using XPath."""
+    try:
+        result = element.xpath(xpath, namespaces=namespaces)
+        if result:
+            if isinstance(result[0], str):
+                return result[0].strip() or None
+            text = result[0].text
+            return text.strip() if text else None
+    except Exception:
+        pass
+    return None
+
+
+def _float_val(element, xpath: str) -> Optional[float]:
+    """Safely extract a float value from an XML element."""
+    text = _text(element, xpath)
+    if text:
+        try:
+            # Remove currency symbols, spaces, and commas
+            cleaned = text.replace(",", ".").replace(" ", "").replace("€", "")
+            return float(cleaned)
+        except (ValueError, TypeError):
+            pass
+    return None
+
+
+def _parse_date(date_str: Optional[str]) -> Optional[date]:
+    """Parse a date string from PLACSP XML (various formats)."""
+    if not date_str:
+        return None
+    date_str = date_str.strip()
+    for fmt in ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S", "%d/%m/%Y"):
+        try:
+            return datetime.strptime(date_str, fmt).date()
+        except ValueError:
+            continue
+    return None
+
+
+def _is_cabildo_tenerife(entry) -> bool:
+    """Check if an XML entry belongs to Cabildo Insular de Tenerife.
+
+    Checks both the NIF identification and the party name.
+    """
+    # Check by NIF
+    nif = _text(
+        entry,
+        ".//cac-place-ext:LocatedContractingParty/cac:Party"
+        "/cac:PartyIdentification/cbc:ID"
+    )
+    if nif and nif.strip().upper() == CABILDO_TENERIFE_NIF:
+        return True
+
+    # Fallback: check by name
+    party_name = _text(
+        entry,
+        ".//cac-place-ext:LocatedContractingParty/cac:Party"
+        "/cac:PartyName/cbc:Name"
+    )
+    if party_name:
+        name_lower = party_name.lower()
+        if all(pattern in name_lower for pattern in CABILDO_TENERIFE_NAME_PATTERNS):
+            return True
+
+    return False
+
+
+def _extract_road_code(text: Optional[str]) -> Optional[str]:
+    """Extract the first TF-XX road code from a text string."""
+    if not text:
+        return None
+    match = ROAD_CODE_PATTERN.search(text)
+    return match.group(0).upper() if match else None
+
+
+def _parse_contract_entry(entry) -> Optional[dict]:
+    """Parse a single ATOM entry into a contract dict.
+
+    Extracts data from cac-place-ext:ContractFolderStatus within the entry.
+    """
+    # Find ContractFolderStatus — the main data container
+    cfs = entry.find(
+        ".//cac-place-ext:ContractFolderStatus",
+        namespaces=NAMESPACES,
+    )
+    if cfs is None:
+        # Try directly under entry
+        cfs = entry
+
+    # Expediente (contract folder ID)
+    expediente = _text(cfs, "cbc-place-ext:ContractFolderID")
+    if not expediente:
+        expediente = _text(cfs, "cbc:ContractFolderID")
+    if not expediente:
+        return None
+
+    # Status code
+    status_code = _text(cfs, "cbc-place-ext:ContractFolderStatusCode")
+    if not status_code:
+        status_code = _text(cfs, "cbc:ContractFolderStatusCode")
+    estado = STATUS_MAP.get(status_code, status_code or "desconocido")
+
+    # Procurement project details
+    pp_base = "cac:ProcurementProject"
+
+    objeto = _text(cfs, f"{pp_base}/cbc:Name")
+    if not objeto:
+        # Try ATOM title as fallback
+        objeto = _text(entry, "atom:title")
+
+    tipo_code = _text(cfs, f"{pp_base}/cbc:TypeCode")
+    tipo = TYPE_MAP.get(tipo_code, tipo_code or "otros")
+
+    # Budget amount
+    importe_licitacion = _float_val(
+        cfs, f"{pp_base}/cac:BudgetAmount/cbc:TotalAmount"
+    )
+    if importe_licitacion is None:
+        importe_licitacion = _float_val(
+            cfs, f"{pp_base}/cac:BudgetAmount/cbc:TaxExclusiveAmount"
+        )
+
+    # Tender result (award)
+    tr_base = "cac:TenderResult"
+    fecha_adj_str = _text(cfs, f"{tr_base}/cbc:AwardDate")
+    fecha_adjudicacion = _parse_date(fecha_adj_str)
+
+    importe_adjudicacion = _float_val(cfs, f"{tr_base}/cbc:AwardAmount")
+
+    # Winner
+    adjudicatario = _text(
+        cfs, f"{tr_base}/cac:WinningParty/cac:PartyName/cbc:Name"
+    )
+
+    # Duration / planned period
+    plazo = _text(cfs, f"{pp_base}/cac:PlannedPeriod/cbc:DurationMeasure")
+
+    # Publication date from ATOM entry
+    pub_date_str = _text(entry, "atom:updated") or _text(entry, "atom:published")
+    fecha_publicacion = _parse_date(pub_date_str)
+
+    # Road code extraction from title/description
+    carretera = _extract_road_code(objeto)
+
+    # Also check location for road code if not found in title
+    if not carretera:
+        location_text = _text(cfs, f"{pp_base}/cac:RealizedLocation/cbc:Description")
+        carretera = _extract_road_code(location_text)
+
+    # Source URL from ATOM link
+    url_fuente = None
+    link_elem = entry.find("atom:link[@rel='alternate']", namespaces=NAMESPACES)
+    if link_elem is not None:
+        url_fuente = link_elem.get("href")
+    if not url_fuente:
+        link_elem = entry.find("atom:link", namespaces=NAMESPACES)
+        if link_elem is not None:
+            url_fuente = link_elem.get("href")
+    if not url_fuente:
+        url_fuente = "https://contrataciondelsectorpublico.gob.es"
+
+    return {
+        "expediente": expediente.strip(),
+        "objeto": objeto,
+        "tipo": tipo,
         "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 12500000.00,
-        "importe_adjudicacion": 11800000.00,
-        "adjudicatario": "SACYR Infraestructuras S.A.",
-        "fecha_publicacion": date(2023, 3, 15),
-        "fecha_adjudicacion": date(2023, 7, 20),
-        "plazo": "24 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-28",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2023/0189",
-        "objeto": "Rehabilitación del firme de la autopista TF-1, tramo El Médano - Los Cristianos, Fase 1",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 18200000.00,
-        "importe_adjudicacion": 17500000.00,
-        "adjudicatario": "Dragados S.A.",
-        "fecha_publicacion": date(2023, 5, 10),
-        "fecha_adjudicacion": date(2023, 9, 15),
-        "plazo": "18 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-1",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2023/0201",
-        "objeto": "Tercer carril TF-5 Santa Cruz - La Laguna, tramo Las Chumberas - Padre Anchieta",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 42000000.00,
-        "importe_adjudicacion": 39800000.00,
-        "adjudicatario": "FCC Construcción S.A.",
-        "fecha_publicacion": date(2023, 2, 1),
-        "fecha_adjudicacion": date(2023, 6, 28),
-        "plazo": "30 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-5",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2022/0312",
-        "objeto": "Mejora de intersección y glorieta en TF-51 km 3.5, Arona",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 3200000.00,
-        "importe_adjudicacion": 2950000.00,
-        "adjudicatario": "Construcciones Martín Fernández S.L.",
-        "fecha_publicacion": date(2022, 11, 5),
-        "fecha_adjudicacion": date(2023, 2, 14),
-        "plazo": "12 meses",
-        "estado": "finalizado",
-        "carretera": "TF-51",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "SV-2023/0067",
-        "objeto": "Servicio de conservación y mantenimiento de la red viaria insular, zona norte",
-        "tipo": "servicios",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 8500000.00,
-        "importe_adjudicacion": 8200000.00,
-        "adjudicatario": "Acciona Mantenimiento e Infraestructuras S.A.",
-        "fecha_publicacion": date(2023, 1, 20),
-        "fecha_adjudicacion": date(2023, 5, 10),
-        "plazo": "48 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-5",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "SV-2023/0068",
-        "objeto": "Servicio de conservación y mantenimiento de la red viaria insular, zona sur",
-        "tipo": "servicios",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 9100000.00,
-        "importe_adjudicacion": 8750000.00,
-        "adjudicatario": "TRAGSA",
-        "fecha_publicacion": date(2023, 1, 20),
-        "fecha_adjudicacion": date(2023, 5, 15),
-        "plazo": "48 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-1",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2024/0023",
-        "objeto": "Iluminación LED inteligente TF-5 tramo Santa Cruz - La Laguna",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 14000000.00,
-        "importe_adjudicacion": 13200000.00,
-        "adjudicatario": "SICE Tecnología y Sistemas S.A.",
-        "fecha_publicacion": date(2024, 1, 8),
-        "fecha_adjudicacion": date(2024, 4, 22),
-        "plazo": "18 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-5",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2024/0024",
-        "objeto": "Iluminación LED inteligente TF-1 tramo Santa Cruz - Candelaria",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 12000000.00,
-        "importe_adjudicacion": 11400000.00,
-        "adjudicatario": "SICE Tecnología y Sistemas S.A.",
-        "fecha_publicacion": date(2024, 2, 1),
-        "fecha_adjudicacion": date(2024, 5, 30),
-        "plazo": "18 meses",
-        "estado": "adjudicado",
-        "carretera": "TF-1",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2023/0245",
-        "objeto": "Acondicionamiento y mejora de la carretera TF-21, tramo La Orotava - Aguamansa",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 5600000.00,
-        "importe_adjudicacion": 5200000.00,
-        "adjudicatario": "Construcciones Martín Fernández S.L.",
-        "fecha_publicacion": date(2023, 8, 12),
-        "fecha_adjudicacion": date(2023, 11, 30),
-        "plazo": "15 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-21",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2022/0278",
-        "objeto": "Mejora de la carretera TF-82, tramo Santiago del Teide - Masca, corrección de curvas",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 7800000.00,
-        "importe_adjudicacion": 7350000.00,
-        "adjudicatario": "SACYR Infraestructuras S.A.",
-        "fecha_publicacion": date(2022, 9, 25),
-        "fecha_adjudicacion": date(2023, 1, 18),
-        "plazo": "20 meses",
-        "estado": "finalizado",
-        "carretera": "TF-82",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2024/0056",
-        "objeto": "Mejora de la seguridad vial TF-24, tramo La Laguna - El Portillo",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 4200000.00,
-        "importe_adjudicacion": 3980000.00,
-        "adjudicatario": "OSSA Obras Subterráneas S.A.",
-        "fecha_publicacion": date(2024, 3, 5),
-        "fecha_adjudicacion": date(2024, 6, 20),
-        "plazo": "14 meses",
-        "estado": "adjudicado",
-        "carretera": "TF-24",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2023/0167",
-        "objeto": "Refuerzo de firme y drenaje TF-13, tramo Icod de los Vinos - Garachico",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 3500000.00,
-        "importe_adjudicacion": 3280000.00,
-        "adjudicatario": "Dragados S.A.",
-        "fecha_publicacion": date(2023, 4, 18),
-        "fecha_adjudicacion": date(2023, 8, 5),
-        "plazo": "10 meses",
-        "estado": "finalizado",
-        "carretera": "TF-13",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "SV-2024/0012",
-        "objeto": "Redacción del proyecto de soterramiento TF-1 Adeje, tramo Fañabé - La Caleta",
-        "tipo": "servicios",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 4800000.00,
-        "importe_adjudicacion": 4500000.00,
-        "adjudicatario": "TYPSA Técnica y Proyectos S.A.",
-        "fecha_publicacion": date(2024, 1, 15),
-        "fecha_adjudicacion": date(2024, 4, 10),
-        "plazo": "18 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-1",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2024/0078",
-        "objeto": "Obras de emergencia para reparación de muro de contención TF-12, Anaga",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 1200000.00,
-        "importe_adjudicacion": 1180000.00,
-        "adjudicatario": "Construcciones Martín Fernández S.L.",
-        "fecha_publicacion": date(2024, 2, 20),
-        "fecha_adjudicacion": date(2024, 3, 5),
-        "plazo": "6 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-12",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2022/0198",
-        "objeto": "Ampliación de arcenes y mejora de trazado TF-38, tramo Arona - Vilaflor",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 6800000.00,
-        "importe_adjudicacion": 6450000.00,
-        "adjudicatario": "FCC Construcción S.A.",
-        "fecha_publicacion": date(2022, 10, 1),
-        "fecha_adjudicacion": date(2023, 1, 25),
-        "plazo": "16 meses",
-        "estado": "finalizado",
-        "carretera": "TF-38",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "SV-2023/0102",
-        "objeto": "Estudio informativo del Tren del Sur, tramo Santa Cruz - Adeje",
-        "tipo": "servicios",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 7500000.00,
-        "importe_adjudicacion": 7100000.00,
-        "adjudicatario": "INECO (Ingeniería y Economía del Transporte S.M.E.)",
-        "fecha_publicacion": date(2023, 6, 1),
-        "fecha_adjudicacion": date(2023, 10, 15),
-        "plazo": "24 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-1",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2024/0091",
-        "objeto": "Renovación de señalización vertical y horizontal TF-5, tramo La Laguna - Tacoronte",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 2100000.00,
-        "importe_adjudicacion": 1950000.00,
-        "adjudicatario": "Señalizaciones Villar S.A.",
-        "fecha_publicacion": date(2024, 4, 10),
-        "fecha_adjudicacion": date(2024, 7, 1),
-        "plazo": "8 meses",
-        "estado": "adjudicado",
-        "carretera": "TF-5",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "SV-2024/0034",
-        "objeto": "Redacción de proyecto y estudio de impacto ambiental, Anillo Insular tramo norte",
-        "tipo": "servicios",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 5200000.00,
-        "importe_adjudicacion": 4900000.00,
-        "adjudicatario": "TYPSA Técnica y Proyectos S.A.",
-        "fecha_publicacion": date(2024, 3, 1),
-        "fecha_adjudicacion": date(2024, 6, 15),
-        "plazo": "20 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-5",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "SU-2024/0015",
-        "objeto": "Suministro e instalación de barreras de seguridad metálicas en TF-1 y TF-5",
-        "tipo": "suministros",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 3800000.00,
-        "importe_adjudicacion": 3600000.00,
-        "adjudicatario": "ArcelorMittal Distribución S.A.",
-        "fecha_publicacion": date(2024, 2, 15),
-        "fecha_adjudicacion": date(2024, 5, 20),
-        "plazo": "12 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-1",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "SV-2023/0088",
-        "objeto": "Asistencia técnica para dirección de obra del tercer carril TF-5",
-        "tipo": "servicios",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 2800000.00,
-        "importe_adjudicacion": 2650000.00,
-        "adjudicatario": "INECO (Ingeniería y Economía del Transporte S.M.E.)",
-        "fecha_publicacion": date(2023, 3, 1),
-        "fecha_adjudicacion": date(2023, 6, 10),
-        "plazo": "36 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-5",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2024/0105",
-        "objeto": "Construcción de paso inferior peatonal en TF-5 km 12.3, Tacoronte",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 1800000.00,
-        "importe_adjudicacion": 1720000.00,
-        "adjudicatario": "OSSA Obras Subterráneas S.A.",
-        "fecha_publicacion": date(2024, 5, 1),
-        "fecha_adjudicacion": date(2024, 8, 10),
-        "plazo": "10 meses",
-        "estado": "adjudicado",
-        "carretera": "TF-5",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "SV-2024/0045",
-        "objeto": "Sistema de cámaras IA para gestión de tráfico en autopistas insulares",
-        "tipo": "servicios",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 15000000.00,
-        "importe_adjudicacion": 0.00,
-        "adjudicatario": "Pendiente de adjudicación",
-        "fecha_publicacion": date(2024, 6, 15),
-        "fecha_adjudicacion": None,
-        "plazo": "36 meses",
-        "estado": "licitacion",
-        "carretera": "TF-1",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2022/0255",
-        "objeto": "Mejora de la carretera TF-51, tramo Las Galletas - Valle San Lorenzo",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 4500000.00,
-        "importe_adjudicacion": 4200000.00,
-        "adjudicatario": "SACYR Infraestructuras S.A.",
-        "fecha_publicacion": date(2022, 8, 15),
-        "fecha_adjudicacion": date(2022, 12, 20),
-        "plazo": "14 meses",
-        "estado": "finalizado",
-        "carretera": "TF-51",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2024/0112",
-        "objeto": "Rehabilitación TF-1 Fase 2, tramo San Isidro - Los Cristianos",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 22000000.00,
-        "importe_adjudicacion": 21200000.00,
-        "adjudicatario": "Dragados S.A.",
-        "fecha_publicacion": date(2024, 4, 1),
-        "fecha_adjudicacion": date(2024, 7, 25),
-        "plazo": "20 meses",
-        "estado": "adjudicado",
-        "carretera": "TF-1",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-    {
-        "expediente": "OB-2023/0198",
-        "objeto": "Nuevo enlace e intercambiador TF-5 / TF-152, La Laguna",
-        "tipo": "obras",
-        "organo_contratacion": "Cabildo Insular de Tenerife",
-        "importe_licitacion": 16500000.00,
-        "importe_adjudicacion": 15800000.00,
-        "adjudicatario": "Acciona Mantenimiento e Infraestructuras S.A.",
-        "fecha_publicacion": date(2023, 7, 15),
-        "fecha_adjudicacion": date(2023, 11, 20),
-        "plazo": "24 meses",
-        "estado": "en_ejecucion",
-        "carretera": "TF-5",
-        "url_fuente": "https://contrataciondelestado.es",
-    },
-]
+        "importe_licitacion": importe_licitacion,
+        "importe_adjudicacion": importe_adjudicacion,
+        "adjudicatario": adjudicatario,
+        "fecha_publicacion": fecha_publicacion,
+        "fecha_adjudicacion": fecha_adjudicacion,
+        "plazo": plazo,
+        "estado": estado,
+        "carretera": carretera,
+        "url_fuente": url_fuente,
+    }
+
+
+def _process_xml_content(xml_bytes: bytes) -> list[dict]:
+    """Parse an XML file content and extract Cabildo de Tenerife contracts.
+
+    Uses iterparse for memory efficiency on large files.
+    """
+    contracts = []
+    try:
+        # Use iterparse for memory-efficient processing of large XML files
+        context = etree.iterparse(
+            BytesIO(xml_bytes),
+            events=("end",),
+            tag="{http://www.w3.org/2005/Atom}entry",
+            recover=True,
+        )
+
+        for event, entry in context:
+            try:
+                if _is_cabildo_tenerife(entry):
+                    contract = _parse_contract_entry(entry)
+                    if contract:
+                        contracts.append(contract)
+            except Exception as e:
+                logger.debug(f"Error parsing entry: {e}")
+            finally:
+                # Free memory — critical for large files
+                entry.clear()
+                while entry.getprevious() is not None:
+                    del entry.getparent()[0]
+
+    except etree.XMLSyntaxError as e:
+        logger.warning(f"XML syntax error (attempting recovery): {e}")
+        # Try full parse as fallback for smaller/simpler files
+        try:
+            parser = etree.XMLParser(recover=True, huge_tree=True)
+            tree = etree.parse(BytesIO(xml_bytes), parser)
+            root = tree.getroot()
+            entries = root.findall(".//atom:entry", namespaces=NAMESPACES)
+            for entry in entries:
+                try:
+                    if _is_cabildo_tenerife(entry):
+                        contract = _parse_contract_entry(entry)
+                        if contract:
+                            contracts.append(contract)
+                except Exception as e:
+                    logger.debug(f"Error parsing entry in fallback: {e}")
+        except Exception as e2:
+            logger.error(f"Failed to parse XML even with recovery: {e2}")
+
+    except Exception as e:
+        logger.error(f"Unexpected error processing XML: {e}")
+
+    return contracts
+
+
+def _process_zip_file(zip_path: str) -> list[dict]:
+    """Process a downloaded PLACSP ZIP file, extracting all contracts.
+
+    Each ZIP contains one or more XML files with ATOM feed entries.
+    """
+    all_contracts = []
+    try:
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            xml_files = [f for f in zf.namelist() if f.lower().endswith(".xml")]
+            logger.info(f"  ZIP contains {len(xml_files)} XML file(s)")
+
+            for xml_name in xml_files:
+                logger.info(f"  Processing XML: {xml_name}")
+                try:
+                    xml_bytes = zf.read(xml_name)
+                    contracts = _process_xml_content(xml_bytes)
+                    all_contracts.extend(contracts)
+                    logger.info(f"    Found {len(contracts)} Cabildo de Tenerife contracts")
+                except Exception as e:
+                    logger.error(f"    Error processing {xml_name}: {e}")
+
+    except zipfile.BadZipFile:
+        logger.error(f"Bad ZIP file: {zip_path}")
+    except Exception as e:
+        logger.error(f"Error opening ZIP {zip_path}: {e}")
+
+    return all_contracts
+
+
+def _download_and_process_zip(url: str, http_session) -> list[dict]:
+    """Download a PLACSP ZIP file to /tmp, process it, and clean up."""
+    # Create temp file
+    fd, tmp_path = tempfile.mkstemp(suffix=".zip", prefix="placsp_")
+    os.close(fd)
+
+    try:
+        success = download_file(url, tmp_path, session=http_session, timeout=(10, 600))
+        if not success:
+            logger.warning(f"Failed to download: {url}")
+            return []
+
+        contracts = _process_zip_file(tmp_path)
+        return contracts
+    finally:
+        # Always clean up temp file
+        try:
+            os.unlink(tmp_path)
+            logger.debug(f"Cleaned up temp file: {tmp_path}")
+        except OSError:
+            pass
 
 
 def _build_company_stats(session):
     """Build/update the empresas table from contracts data."""
     from sqlalchemy import func
+
     results = (
         session.query(
             Contrato.adjudicatario,
             func.count(Contrato.id).label("num"),
             func.sum(Contrato.importe_adjudicacion).label("total"),
         )
+        .filter(Contrato.adjudicatario.isnot(None))
+        .filter(Contrato.adjudicatario != "")
         .filter(Contrato.adjudicatario != "Pendiente de adjudicación")
         .group_by(Contrato.adjudicatario)
         .all()
@@ -429,39 +396,93 @@ def _build_company_stats(session):
     logger.info(f"Updated {len(results)} companies in empresas table")
 
 
-def run():
-    """Seed contract data into the database."""
-    session = get_session()
+def run() -> int:
+    """Fetch real contracts from PLACSP and upsert into database.
+
+    Strategy:
+    1. Download annual ZIP files for configured years.
+    2. Parse XML, filter for Cabildo de Tenerife entries.
+    3. Upsert into database (preserving existing data on failure).
+    4. Update company statistics.
+
+    Returns the count of records processed.
+    """
+    http_session = create_http_session()
+    all_contracts = []
+
+    # Download and process annual ZIPs
+    for year in INITIAL_LOAD_YEARS:
+        url = PLACSP_ANNUAL_ZIP_URL.format(year=year)
+        logger.info(f"Processing PLACSP annual feed: {year}")
+        contracts = _download_and_process_zip(url, http_session)
+        if contracts:
+            all_contracts.extend(contracts)
+            logger.info(f"  Year {year}: {len(contracts)} contracts found")
+        else:
+            logger.info(f"  Year {year}: no contracts found or download failed")
+
+    # Also try the current month's feed for the most recent data
+    current_yearmonth = datetime.now().strftime("%Y%m")
+    url = PLACSP_MONTHLY_ZIP_URL.format(yearmonth=current_yearmonth)
+    logger.info(f"Processing PLACSP monthly feed: {current_yearmonth}")
+    monthly_contracts = _download_and_process_zip(url, http_session)
+    if monthly_contracts:
+        all_contracts.extend(monthly_contracts)
+        logger.info(f"  Month {current_yearmonth}: {len(monthly_contracts)} contracts found")
+
+    if not all_contracts:
+        logger.warning(
+            "No contracts fetched from PLACSP feeds. "
+            "Keeping existing data in database (fallback: no delete)."
+        )
+        return 0
+
+    # Deduplicate by expediente (keep the most recent version)
+    seen = {}
+    for contract in all_contracts:
+        exp = contract["expediente"]
+        # Later entries overwrite earlier ones (more recent status)
+        seen[exp] = contract
+
+    unique_contracts = list(seen.values())
+    logger.info(
+        f"Total unique contracts after deduplication: {len(unique_contracts)} "
+        f"(from {len(all_contracts)} raw entries)"
+    )
+
+    # Upsert into database
+    db_session = get_session()
     count = 0
 
     try:
-        for contract_data in CONTRACTS:
-            existing = session.query(Contrato).filter_by(
+        for contract_data in unique_contracts:
+            existing = db_session.query(Contrato).filter_by(
                 expediente=contract_data["expediente"]
             ).first()
 
             if existing:
                 for key, value in contract_data.items():
-                    setattr(existing, key, value)
-                logger.info(f"Updated contract: {contract_data['expediente']}")
+                    if value is not None:  # Don't overwrite with None
+                        setattr(existing, key, value)
+                logger.debug(f"Updated contract: {contract_data['expediente']}")
             else:
                 contrato = Contrato(**contract_data)
-                session.add(contrato)
-                logger.info(f"Added contract: {contract_data['expediente']}")
+                db_session.add(contrato)
+                logger.debug(f"Added contract: {contract_data['expediente']}")
 
             count += 1
 
-        session.commit()
+        db_session.commit()
 
         # Build company rankings from contracts
-        _build_company_stats(session)
+        _build_company_stats(db_session)
 
-        logger.info(f"Contratos pipeline completed: {count} contracts upserted")
+        logger.info(f"Contratos pipeline completed: {count} contracts upserted from PLACSP")
     except Exception as e:
-        session.rollback()
-        logger.error(f"Error in contratos pipeline: {e}")
+        db_session.rollback()
+        logger.error(f"Error in contratos pipeline: {e}", exc_info=True)
         raise
     finally:
-        session.close()
+        db_session.close()
 
     return count

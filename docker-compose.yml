@@ -27,6 +27,7 @@ services:
     build:
       context: ./etl
       dockerfile: Dockerfile
+    command: ["python", "main.py", "--scheduled"]
     volumes:
       - db-data:/app/data
     environment:
@@ -36,7 +37,7 @@ services:
         condition: service_started
     networks:
       - tfmobility
-    restart: "no"
+    restart: unless-stopped
 
 volumes:
   db-data:
