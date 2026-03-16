@@ -1,11 +1,97 @@
-const REGULATIONS = [
-  { island: 'Formentera', region: 'Baleares', regulated: true, measure: 'Límite de vehículos en verano' },
-  { island: 'Ibiza', region: 'Baleares', regulated: true, measure: 'Tasa de circulación turística' },
-  { island: 'Mallorca', region: 'Baleares', regulated: true, measure: 'Restricción de alquiler diésel' },
-  { island: 'Azores', region: 'Portugal', regulated: true, measure: 'Tasa ecológica por vehículo' },
-  { island: 'Madeira', region: 'Portugal', regulated: true, measure: 'Control de acceso a zonas protegidas' },
-  { island: 'Canarias', region: 'España', regulated: false, measure: 'Sin regulación vigente' },
+type RegulationStatus = 'regulated' | 'partial' | 'pending';
+
+interface Regulation {
+  island: string;
+  region: string;
+  status: RegulationStatus;
+  measure: string;
+  since: string;
+}
+
+const REGULATIONS: Regulation[] = [
+  {
+    island: 'Formentera',
+    region: 'Baleares',
+    status: 'regulated',
+    measure: 'Limita entrada de vehículos en verano + tasa de circulación',
+    since: '2019',
+  },
+  {
+    island: 'Ibiza',
+    region: 'Baleares',
+    status: 'regulated',
+    measure: 'Cupo de 20.168 vehículos foráneos/día en temporada alta',
+    since: '2025',
+  },
+  {
+    island: 'Mallorca',
+    region: 'Baleares',
+    status: 'pending',
+    measure: 'Legislación en preparación tras 400K coches externos en 2023',
+    since: '—',
+  },
+  {
+    island: 'Azores',
+    region: 'Portugal',
+    status: 'regulated',
+    measure: 'Acceso restringido a zonas turísticas con lanzaderas',
+    since: 'Activo',
+  },
+  {
+    island: 'Madeira',
+    region: 'Portugal',
+    status: 'pending',
+    measure: 'Debate político sobre cupos (flota creció 60% en 3 años)',
+    since: '—',
+  },
+  {
+    island: 'Canarias',
+    region: 'España',
+    status: 'partial',
+    measure: 'Restricciones puntuales (Teide, Anaga, La Graciosa). Sin regulación general de rent-a-car',
+    since: '2024',
+  },
 ];
+
+function StatusBadge({ status }: { status: RegulationStatus }) {
+  switch (status) {
+    case 'regulated':
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-green/10 px-2.5 py-0.5 text-xs font-medium text-green">
+          Regulado
+        </span>
+      );
+    case 'partial':
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/10 px-2.5 py-0.5 text-xs font-medium text-yellow-400">
+          Parcial
+        </span>
+      );
+    case 'pending':
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/10 px-2.5 py-0.5 text-xs font-medium text-slate-400">
+          En trámite
+        </span>
+      );
+  }
+}
+
+function getRowHighlightClass(status: RegulationStatus): string {
+  if (status === 'partial') return 'bg-yellow-500/5';
+  if (status === 'pending') return '';
+  return '';
+}
+
+function getMobileCardClass(status: RegulationStatus): string {
+  switch (status) {
+    case 'regulated':
+      return 'border-brand-border bg-brand-surface';
+    case 'partial':
+      return 'border-yellow-500/30 bg-yellow-500/5';
+    case 'pending':
+      return 'border-brand-border bg-brand-surface';
+  }
+}
 
 export function RegulationTable() {
   return (
@@ -18,34 +104,26 @@ export function RegulationTable() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-brand-border text-left text-xs text-slate-500 uppercase tracking-wider">
-              <th className="pb-3 pr-4">Isla</th>
+              <th className="pb-3 pr-4">Destino</th>
               <th className="pb-3 pr-4">Región</th>
               <th className="pb-3 pr-4">Estado</th>
-              <th className="pb-3">Medida</th>
+              <th className="pb-3 pr-4">Medida</th>
+              <th className="pb-3">Desde</th>
             </tr>
           </thead>
           <tbody>
             {REGULATIONS.map((r) => (
               <tr
                 key={r.island}
-                className={`border-b border-brand-border/50 ${
-                  !r.regulated ? 'bg-red-accent/5' : ''
-                }`}
+                className={`border-b border-brand-border/50 ${getRowHighlightClass(r.status)}`}
               >
                 <td className="py-3 pr-4 font-medium">{r.island}</td>
                 <td className="py-3 pr-4 text-slate-400">{r.region}</td>
                 <td className="py-3 pr-4">
-                  {r.regulated ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-green/10 px-2.5 py-0.5 text-xs font-medium text-green">
-                      Regulado
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-red-accent/10 px-2.5 py-0.5 text-xs font-medium text-red-accent">
-                      Sin regular
-                    </span>
-                  )}
+                  <StatusBadge status={r.status} />
                 </td>
-                <td className="py-3 text-slate-300">{r.measure}</td>
+                <td className="py-3 pr-4 text-slate-300">{r.measure}</td>
+                <td className="py-3 text-slate-400 text-xs">{r.since}</td>
               </tr>
             ))}
           </tbody>
@@ -57,29 +135,25 @@ export function RegulationTable() {
         {REGULATIONS.map((r) => (
           <div
             key={r.island}
-            className={`rounded-lg border p-3 ${
-              !r.regulated
-                ? 'border-red-accent/30 bg-red-accent/5'
-                : 'border-brand-border bg-brand-surface'
-            }`}
+            className={`rounded-lg border p-3 ${getMobileCardClass(r.status)}`}
           >
             <div className="flex items-center justify-between mb-1">
               <span className="font-medium">{r.island}</span>
-              {r.regulated ? (
-                <span className="rounded-full bg-green/10 px-2 py-0.5 text-xs font-medium text-green">
-                  Regulado
-                </span>
-              ) : (
-                <span className="rounded-full bg-red-accent/10 px-2 py-0.5 text-xs font-medium text-red-accent">
-                  Sin regular
-                </span>
-              )}
+              <StatusBadge status={r.status} />
             </div>
             <p className="text-xs text-slate-400">{r.region}</p>
             <p className="text-xs text-slate-300 mt-1">{r.measure}</p>
+            {r.since !== '—' && (
+              <p className="text-xs text-slate-500 mt-1">Desde: {r.since}</p>
+            )}
           </div>
         ))}
       </div>
+
+      {/* Sources footer */}
+      <p className="text-xs text-slate-500 mt-4 pt-3 border-t border-brand-border/50">
+        Datos verificados a marzo 2026. Fuentes: legislación autonómica de cada territorio, BOE, boletines oficiales insulares.
+      </p>
     </div>
   );
 }

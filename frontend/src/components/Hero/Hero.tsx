@@ -53,7 +53,7 @@ export function Hero() {
     <section
       id="hero"
       ref={ref}
-      className="relative min-h-screen flex items-center pt-20 pb-16"
+      className="relative py-20"
       aria-label="El Impacto - Estadísticas clave de movilidad"
     >
       {/* Background */}
@@ -63,14 +63,14 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 w-full">
         {/* Section title */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-10">
           <p className="text-brand-blue font-mono text-sm tracking-widest uppercase mb-3">
             Observatorio de Movilidad
           </p>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3">
             El <span className="gradient-text-red">Impacto</span>
-          </h1>
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+          </h2>
+          <p className="text-base text-slate-300 max-w-2xl mx-auto">
             Tenerife tiene uno de los índices de motorización más altos del mundo.
             Estos son los números que lo demuestran.
           </p>
