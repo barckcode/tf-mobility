@@ -40,8 +40,18 @@ PLACSP_MONTHLY_ZIP_URL = (
 CABILDO_TENERIFE_NIF = "P3800001D"
 CABILDO_TENERIFE_NAME_PATTERNS = ["cabildo", "tenerife"]
 
-# Years to fetch on initial load
-INITIAL_LOAD_YEARS = [2022, 2023, 2024, 2025, 2026]
+# Monthly ZIPs to fetch on initial load (YYYYMM format)
+# Monthly ZIPs are ~120MB vs ~1.6GB for annual — much faster to download/process.
+# We fetch the last 12 months of data for a good initial dataset.
+def _get_initial_months() -> list[str]:
+    """Generate YYYYMM strings for the last 12 months."""
+    from datetime import datetime, timedelta
+    months = []
+    now = datetime.now()
+    for i in range(12):
+        dt = now - timedelta(days=30 * i)
+        months.append(dt.strftime("%Y%m"))
+    return months
 
 # XML namespaces used in PLACSP feeds
 NAMESPACES = {
@@ -318,7 +328,7 @@ def _process_zip_file(zip_path: str) -> list[dict]:
     all_contracts = []
     try:
         with zipfile.ZipFile(zip_path, "r") as zf:
-            xml_files = [f for f in zf.namelist() if f.lower().endswith(".xml")]
+            xml_files = [f for f in zf.namelist() if f.lower().endswith((".xml", ".atom"))]
             logger.info(f"  ZIP contains {len(xml_files)} XML file(s)")
 
             for xml_name in xml_files:
@@ -410,25 +420,17 @@ def run() -> int:
     http_session = create_http_session()
     all_contracts = []
 
-    # Download and process annual ZIPs
-    for year in INITIAL_LOAD_YEARS:
-        url = PLACSP_ANNUAL_ZIP_URL.format(year=year)
-        logger.info(f"Processing PLACSP annual feed: {year}")
+    # Download and process monthly ZIPs (much smaller than annual ~120MB vs ~1.6GB)
+    months_to_fetch = _get_initial_months()
+    for yearmonth in months_to_fetch:
+        url = PLACSP_MONTHLY_ZIP_URL.format(yearmonth=yearmonth)
+        logger.info(f"Processing PLACSP monthly feed: {yearmonth}")
         contracts = _download_and_process_zip(url, http_session)
         if contracts:
             all_contracts.extend(contracts)
-            logger.info(f"  Year {year}: {len(contracts)} contracts found")
+            logger.info(f"  Month {yearmonth}: {len(contracts)} contracts found")
         else:
-            logger.info(f"  Year {year}: no contracts found or download failed")
-
-    # Also try the current month's feed for the most recent data
-    current_yearmonth = datetime.now().strftime("%Y%m")
-    url = PLACSP_MONTHLY_ZIP_URL.format(yearmonth=current_yearmonth)
-    logger.info(f"Processing PLACSP monthly feed: {current_yearmonth}")
-    monthly_contracts = _download_and_process_zip(url, http_session)
-    if monthly_contracts:
-        all_contracts.extend(monthly_contracts)
-        logger.info(f"  Month {current_yearmonth}: {len(monthly_contracts)} contracts found")
+            logger.info(f"  Month {yearmonth}: no contracts found or download failed")
 
     if not all_contracts:
         logger.warning(
