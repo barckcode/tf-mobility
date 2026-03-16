@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-const NAV_ITEMS = [
-  { id: 'sources', label: 'Fuentes' },
-  { id: 'hero', label: 'El Impacto' },
-  { id: 'traffic', label: 'Tráfico' },
-  { id: 'tourism', label: 'Turismo' },
-  { id: 'contracts', label: 'El Dinero Público' },
-  { id: 'promises', label: 'Promesas vs Realidad' },
-  { id: 'alternatives', label: 'Alternativas' },
-  { id: 'comparison', label: 'Comparativa' },
+interface NavItem {
+  label: string;
+  to: string;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { label: 'Inicio', to: '/' },
+  { label: 'Transporte Público', to: '/transporte-publico' },
 ];
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -21,9 +23,16 @@ export function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const handleNavClick = (item: NavItem) => {
     setMenuOpen(false);
+
+    // If we're already on the target page and it's the home page, scroll to top
+    if (item.to === '/' && location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    navigate(item.to);
   };
 
   return (
@@ -40,25 +49,29 @@ export function Header() {
         aria-label="Navegación principal"
       >
         {/* Logo */}
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        <Link
+          to="/"
           className="flex items-center gap-2 text-xl font-bold tracking-tight focus:outline-none
                      focus:ring-2 focus:ring-brand-blue/50 rounded-lg px-2 py-1"
           aria-label="Ir al inicio"
         >
           <span className="text-white">TF</span>
           <span className="gradient-text">Mobility</span>
-        </button>
+        </Link>
 
         {/* Desktop nav */}
         <ul className="hidden md:flex items-center gap-1">
           {NAV_ITEMS.map((item) => (
-            <li key={item.id}>
+            <li key={item.to}>
               <button
-                onClick={() => scrollTo(item.id)}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-slate-400 transition-colors
-                           hover:text-white hover:bg-brand-card/60 focus:outline-none focus:ring-2
-                           focus:ring-brand-blue/50"
+                onClick={() => handleNavClick(item)}
+                className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors
+                           focus:outline-none focus:ring-2 focus:ring-brand-blue/50
+                           ${
+                             location.pathname === item.to
+                               ? 'text-white bg-brand-card/60'
+                               : 'text-slate-400 hover:text-white hover:bg-brand-card/60'
+                           }`}
               >
                 {item.label}
               </button>
@@ -97,11 +110,16 @@ export function Header() {
         <div className="md:hidden bg-brand-bg/95 backdrop-blur-md border-t border-brand-border">
           <ul className="flex flex-col px-4 py-2">
             {NAV_ITEMS.map((item) => (
-              <li key={item.id}>
+              <li key={item.to}>
                 <button
-                  onClick={() => scrollTo(item.id)}
-                  className="w-full text-left rounded-lg px-4 py-3 text-sm font-medium
-                             text-slate-400 transition-colors hover:text-white hover:bg-brand-card/60"
+                  onClick={() => handleNavClick(item)}
+                  className={`w-full text-left rounded-lg px-4 py-3 text-sm font-medium
+                             transition-colors
+                             ${
+                               location.pathname === item.to
+                                 ? 'text-white bg-brand-card/60'
+                                 : 'text-slate-400 hover:text-white hover:bg-brand-card/60'
+                             }`}
                 >
                   {item.label}
                 </button>

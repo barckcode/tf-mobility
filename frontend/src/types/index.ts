@@ -179,6 +179,59 @@ export interface ContractsSummaryResponse {
   top_roads: { road: string; count: number }[];
 }
 
+// S7 — Transit (Public Transport)
+export interface TransitSummary {
+  total_stops: number;
+  total_routes: number;
+  avg_buses_per_day: number;
+  busiest_stop_name: string;
+  busiest_stop_buses: number;
+  routes_on_congested_roads: number;
+}
+
+export interface TransitStop {
+  stop_id: string;
+  name: string;
+  lat: number;
+  lon: number;
+  buses_dia: number;
+  rutas_count: number;
+}
+
+export interface TransitRoute {
+  route_id: string;
+  short_name: string;
+  long_name: string;
+  color: string;
+  corridors: string[];
+}
+
+export interface CorridorRoute {
+  route_id: string;
+  short_name: string;
+  long_name: string;
+  overlap_description: string;
+}
+
+export interface Corridor {
+  road_code: string;
+  routes: CorridorRoute[];
+}
+
+export interface TransitCorridorsResponse {
+  corridors: Corridor[];
+}
+
+export interface TransitStopsResponse {
+  stops: TransitStop[];
+  total: number;
+}
+
+export interface TransitRoutesResponse {
+  routes: TransitRoute[];
+  total: number;
+}
+
 // Metadata — Data freshness
 export interface PipelineFreshness {
   pipeline: string;

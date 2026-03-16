@@ -11,6 +11,10 @@ import type {
   TrafficResponse,
   TrafficYearsResponse,
   ContractsSummaryResponse,
+  TransitSummary,
+  TransitStopsResponse,
+  TransitRoutesResponse,
+  TransitCorridorsResponse,
 } from '@/types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -82,4 +86,20 @@ export async function getTrafficYears(): Promise<TrafficYearsResponse> {
 
 export async function getContractsSummary(): Promise<ContractsSummaryResponse> {
   return fetchJSON<ContractsSummaryResponse>(`${API_BASE}/contracts/summary`);
+}
+
+export async function getTransitSummary(): Promise<TransitSummary> {
+  return fetchJSON<TransitSummary>(`${API_BASE}/transit/summary`);
+}
+
+export async function getTransitStops(): Promise<TransitStopsResponse> {
+  return fetchJSON<TransitStopsResponse>(`${API_BASE}/transit/stops`);
+}
+
+export async function getTransitRoutes(): Promise<TransitRoutesResponse> {
+  return fetchJSON<TransitRoutesResponse>(`${API_BASE}/transit/routes`);
+}
+
+export async function getTransitCorridors(): Promise<TransitCorridorsResponse> {
+  return fetchJSON<TransitCorridorsResponse>(`${API_BASE}/transit/corridors`);
 }

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { getAlternatives } from '@/lib/api';
 import { useFetch } from '@/hooks/useFetch';
 import { AlternativeCard } from './AlternativeCard';
@@ -29,6 +30,16 @@ export function Alternatives() {
             Estado actual de las opciones de transporte público y movilidad alternativa
             disponibles en Tenerife.
           </p>
+          <Link
+            to="/transporte-publico"
+            className="inline-flex items-center gap-2 mt-4 text-green font-medium text-sm
+                       hover:text-green/80 transition-colors group"
+          >
+            Estudio completo del transporte público
+            <span className="inline-block transition-transform group-hover:translate-x-1">
+              &rarr;
+            </span>
+          </Link>
         </div>
 
         {error ? (
