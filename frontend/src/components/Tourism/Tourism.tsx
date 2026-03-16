@@ -51,7 +51,7 @@ export function Tourism() {
           </div>
         ) : data ? (
           <div className="space-y-6">
-            <TourismChart data={data.monthly} />
+            <TourismChart data={data.data} />
             <RegulationTable />
           </div>
         ) : (

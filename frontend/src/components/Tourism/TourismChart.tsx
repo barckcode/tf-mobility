@@ -13,17 +13,11 @@ interface TourismChartProps {
   data: TourismMonthly[];
 }
 
-const MONTH_LABELS: Record<string, string> = {
-  '01': 'Ene', '02': 'Feb', '03': 'Mar', '04': 'Abr',
-  '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Ago',
-  '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dic',
+const MONTH_LABELS: Record<number, string> = {
+  1: 'Ene', 2: 'Feb', 3: 'Mar', 4: 'Abr',
+  5: 'May', 6: 'Jun', 7: 'Jul', 8: 'Ago',
+  9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic',
 };
-
-function formatMonth(month: string): string {
-  const parts = month.split('-');
-  const mm = parts[1] || '';
-  return MONTH_LABELS[mm] || month;
-}
 
 function formatThousands(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
@@ -32,10 +26,17 @@ function formatThousands(value: number): string {
 }
 
 export function TourismChart({ data }: TourismChartProps) {
-  const chartData = data.map((d) => ({
-    month: formatMonth(d.month),
+  // Filter for Tenerife only and get the latest full year
+  const tenerifeData = data.filter((d) => d.island === 'Tenerife');
+  const years = [...new Set(tenerifeData.map((d) => d.year))].sort();
+  const latestYear = years[years.length - 1] || new Date().getFullYear();
+  const yearData = tenerifeData
+    .filter((d) => d.year === latestYear)
+    .sort((a, b) => a.month - b.month);
+
+  const chartData = yearData.map((d) => ({
+    month: MONTH_LABELS[d.month] || `M${d.month}`,
     tourists: d.tourists,
-    raw: d.month,
   }));
 
   return (

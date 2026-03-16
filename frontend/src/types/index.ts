@@ -77,18 +77,16 @@ export interface ContractFilters {
 
 // S2 — Tourism
 export interface TourismMonthly {
-  month: string;
+  year: number;
+  month: number;
   tourists: number;
+  island: string;
+  source: string;
 }
 
 export interface TourismResponse {
-  monthly: TourismMonthly[];
-  summary: {
-    total_tourists_year: number;
-    rental_cars: number;
-    avg_daily_spend: number;
-    avg_stay_days: number;
-  };
+  data: TourismMonthly[];
+  total_records: number;
 }
 
 // S5 — Alternatives
