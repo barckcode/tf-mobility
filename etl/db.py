@@ -102,6 +102,43 @@ class Empresa(Base):
     importe_total = Column(Float, default=0.0)
 
 
+class Alternativa(Base):
+    __tablename__ = "alternativas"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(200), unique=True)
+    tipo = Column(String(50))  # publico, futuro, activo, privado
+    estado = Column(String(50))  # operativo, en_estudio, fragmentado, reciente
+    operador = Column(String(200))
+    cobertura = Column(Text)
+    usuarios_anuales = Column(Integer)
+    dato_clave = Column(Text)
+    descripcion = Column(Text)
+    color = Column(String(20))
+    icono = Column(String(50))
+    url_fuente = Column(Text)
+
+
+class ComparativaIsla(Base):
+    __tablename__ = "comparativa_islas"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    isla = Column(String(100), unique=True)
+    comunidad = Column(String(100))
+    poblacion = Column(Integer)
+    superficie_km2 = Column(Float)
+    turistas_anuales = Column(Integer)
+    ratio_turistas_habitante = Column(Float)
+    vehiculos_registrados = Column(Integer)
+    coches_por_km2 = Column(Float)
+    inversion_carreteras_m_eur = Column(Float)
+    km_carreteras = Column(Float)
+    tiene_tren = Column(String(10))  # si, no, en_proyecto
+    tiene_tranvia = Column(String(10))
+    regulacion_trafico = Column(String(200))
+    fuente = Column(String(200))
+
+
 def init_db():
     """Create all tables in the database."""
     os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)

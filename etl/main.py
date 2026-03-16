@@ -23,13 +23,15 @@ def run_all():
     init_db()
 
     # Run individual pipelines
-    from pipelines import contratos, proyectos, estadisticas, turismo
+    from pipelines import contratos, proyectos, estadisticas, turismo, alternativas, comparativa
 
     pipelines = [
         ("contratos", contratos.run),
         ("proyectos", proyectos.run),
         ("estadisticas", estadisticas.run),
         ("turismo", turismo.run),
+        ("alternativas", alternativas.run),
+        ("comparativa", comparativa.run),
     ]
 
     results = {}

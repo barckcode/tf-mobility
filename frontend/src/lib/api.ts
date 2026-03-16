@@ -4,6 +4,9 @@ import type {
   RankingsResponse,
   ProjectsResponse,
   ContractFilters,
+  TourismResponse,
+  AlternativesResponse,
+  ComparisonResponse,
 } from '@/types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -46,4 +49,16 @@ export async function getRankings(): Promise<RankingsResponse> {
 
 export async function getProjects(): Promise<ProjectsResponse> {
   return fetchJSON<ProjectsResponse>(`${API_BASE}/projects`);
+}
+
+export async function getTourism(): Promise<TourismResponse> {
+  return fetchJSON<TourismResponse>(`${API_BASE}/tourism/monthly`);
+}
+
+export async function getAlternatives(): Promise<AlternativesResponse> {
+  return fetchJSON<AlternativesResponse>(`${API_BASE}/alternatives`);
+}
+
+export async function getComparison(): Promise<ComparisonResponse> {
+  return fetchJSON<ComparisonResponse>(`${API_BASE}/comparison`);
 }

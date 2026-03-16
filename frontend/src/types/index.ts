@@ -74,3 +74,48 @@ export interface ContractFilters {
   type?: string;
   status?: string;
 }
+
+// S2 — Tourism
+export interface TourismMonthly {
+  month: string;
+  tourists: number;
+}
+
+export interface TourismResponse {
+  monthly: TourismMonthly[];
+  summary: {
+    total_tourists_year: number;
+    rental_cars: number;
+    avg_daily_spend: number;
+    avg_stay_days: number;
+  };
+}
+
+// S5 — Alternatives
+export interface Alternative {
+  id: number;
+  name: string;
+  type: string;
+  description: string;
+  status: string;
+  users_annual?: number;
+  coverage_pct?: number;
+}
+
+export interface AlternativesResponse {
+  alternatives: Alternative[];
+}
+
+// S6 — Comparison
+export interface IslandComparison {
+  island: string;
+  vehicle_density: number;
+  tourists_per_inhabitant: number;
+  road_investment: number;
+  has_regulation: boolean;
+  population: number;
+}
+
+export interface ComparisonResponse {
+  islands: IslandComparison[];
+}

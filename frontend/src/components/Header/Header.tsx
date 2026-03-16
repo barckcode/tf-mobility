@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 
 const NAV_ITEMS = [
   { id: 'hero', label: 'El Impacto' },
+  { id: 'tourism', label: 'Turismo' },
   { id: 'contracts', label: 'El Dinero Público' },
   { id: 'promises', label: 'Promesas vs Realidad' },
+  { id: 'alternatives', label: 'Alternativas' },
+  { id: 'comparison', label: 'Comparativa' },
 ];
 
 export function Header() {
