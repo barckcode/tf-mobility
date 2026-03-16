@@ -30,8 +30,11 @@ services:
     command: ["python", "main.py", "--scheduled"]
     volumes:
       - db-data:/app/data
+      - etl-cache:/app/cache
     environment:
       - DATABASE_PATH=/app/data/tfmobility.db
+      - ETL_CACHE_DIR=/app/cache
+      - PLACSP_CACHE_DIR=/app/cache/placsp
     depends_on:
       backend:
         condition: service_started
@@ -41,6 +44,7 @@ services:
 
 volumes:
   db-data:
+  etl-cache:
 
 networks:
   tfmobility:

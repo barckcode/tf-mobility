@@ -1,6 +1,9 @@
 """Shared HTTP client with retries, logging, and error handling for ETL pipelines."""
 
+import hashlib
+import json
 import logging
+import os
 import time
 from typing import Optional
 
@@ -94,6 +97,64 @@ def fetch_json(
     except Exception as e:
         logger.error(f"  Unexpected error fetching {url}: {e}")
         return None
+
+
+CACHE_BASE_DIR = os.environ.get("ETL_CACHE_DIR", "/app/cache")
+
+
+def _cache_key(url: str, params: Optional[dict] = None) -> str:
+    """Generate a stable cache filename from URL + params."""
+    raw = url
+    if params:
+        raw += "?" + "&".join(f"{k}={v}" for k, v in sorted(params.items()))
+    return hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+
+def fetch_json_cached(
+    url: str,
+    params: Optional[dict] = None,
+    session: Optional[requests.Session] = None,
+    timeout: tuple = DEFAULT_TIMEOUT,
+    cache_subdir: str = "json",
+    cache_filename: Optional[str] = None,
+    force_download: bool = False,
+) -> Optional[dict]:
+    """Like fetch_json, but caches the raw JSON response to disk.
+
+    Cache logic:
+    - Responses are saved to CACHE_BASE_DIR/<cache_subdir>/<filename>.json
+    - If the file exists locally, return it without making an HTTP request.
+    - Set force_download=True to bypass cache.
+    """
+    cache_dir = os.path.join(CACHE_BASE_DIR, cache_subdir)
+    os.makedirs(cache_dir, exist_ok=True)
+
+    filename = cache_filename or _cache_key(url, params)
+    if not filename.endswith(".json"):
+        filename += ".json"
+    cached_path = os.path.join(cache_dir, filename)
+
+    # Try loading from cache
+    if os.path.exists(cached_path) and os.path.getsize(cached_path) > 0 and not force_download:
+        try:
+            with open(cached_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            logger.info(f"  Cache hit: {cached_path}")
+            return data
+        except (json.JSONDecodeError, IOError) as e:
+            logger.warning(f"  Cache file corrupt, re-downloading: {e}")
+
+    # Fetch from network
+    data = fetch_json(url, params=params, session=session, timeout=timeout)
+    if data is not None:
+        try:
+            with open(cached_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False)
+            logger.info(f"  Cached to: {cached_path}")
+        except IOError as e:
+            logger.warning(f"  Failed to write cache: {e}")
+
+    return data
 
 
 def download_file(

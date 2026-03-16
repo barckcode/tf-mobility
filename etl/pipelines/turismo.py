@@ -16,7 +16,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from db import get_session, TurismoMensual
-from utils import fetch_json, create_http_session
+from utils import fetch_json_cached, create_http_session
 
 logger = logging.getLogger(__name__)
 
@@ -155,7 +155,13 @@ def _fetch_tourism_data(session) -> list[dict]:
     url = ISTAC_BASE_URL
     params = {"representation": representation}
 
-    data = fetch_json(url, params=params, session=session)
+    data = fetch_json_cached(
+        url,
+        params=params,
+        session=session,
+        cache_subdir="istac",
+        cache_filename="turismo_canarias",
+    )
     if data is None:
         logger.error("Failed to fetch tourism data from ISTAC API")
         return []

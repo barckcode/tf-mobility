@@ -96,6 +96,41 @@ def run_all():
     return results
 
 
+def run_single(pipeline_name: str):
+    """Run a single ETL pipeline by name."""
+    logger.info(f"=== Running single pipeline: {pipeline_name} ===")
+    init_db()
+
+    from pipelines import (
+        contratos,
+        proyectos,
+        estadisticas,
+        turismo,
+        alternativas,
+        comparativa,
+        trafico_imd,
+    )
+
+    pipeline_map = {
+        "turismo": turismo.run,
+        "trafico_imd": trafico_imd.run,
+        "contratos": contratos.run,
+        "estadisticas": estadisticas.run,
+        "proyectos": proyectos.run,
+        "alternativas": alternativas.run,
+        "comparativa": comparativa.run,
+    }
+
+    if pipeline_name not in pipeline_map:
+        logger.error(f"Unknown pipeline: {pipeline_name}. Available: {list(pipeline_map)}")
+        sys.exit(1)
+
+    started = datetime.now(timezone.utc)
+    count = pipeline_map[pipeline_name]()
+    _record_etl_run(pipeline_name, "success", count, started)
+    logger.info(f"Pipeline {pipeline_name} completed: {count} records")
+
+
 def main():
     """Entry point with CLI argument parsing."""
     parser = argparse.ArgumentParser(
@@ -106,9 +141,18 @@ def main():
         action="store_true",
         help="Run in scheduled mode (repeat every 30 days)",
     )
+    parser.add_argument(
+        "--only",
+        type=str,
+        default=None,
+        help="Run only a specific pipeline (e.g. --only contratos)",
+    )
     args = parser.parse_args()
 
-    run_all()
+    if args.only:
+        run_single(args.only)
+    else:
+        run_all()
 
     if args.scheduled:
         logger.info("Scheduled mode: will re-run every 30 days")

@@ -17,7 +17,7 @@ from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from db import get_session, EstacionAforo, Carretera
-from utils import fetch_json, create_http_session
+from utils import fetch_json, fetch_json_cached, create_http_session
 
 logger = logging.getLogger(__name__)
 
@@ -284,7 +284,13 @@ def run() -> int:
     all_records = []
     for year, url in sorted(resources.items()):
         logger.info(f"Fetching IMD data for {year}")
-        data = fetch_json(url, session=http_session, timeout=(10, 120))
+        data = fetch_json_cached(
+            url,
+            session=http_session,
+            timeout=(10, 120),
+            cache_subdir="ckan/imd",
+            cache_filename=f"imd_{year}",
+        )
         if data is None:
             logger.warning(f"Failed to fetch IMD data for {year} — skipping")
             continue

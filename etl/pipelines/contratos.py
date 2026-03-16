@@ -44,7 +44,11 @@ CABILDO_TENERIFE_NAME_PATTERNS = ["cabildo", "tenerife"]
 # Monthly ZIPs are ~120MB vs ~1.6GB for annual — much faster to download/process.
 # Full historical load: 10 years of monthly data (~120 months).
 # After initial load, scheduled runs only fetch the current month.
-HISTORY_YEARS = 10
+# PLACSP monthly ZIPs available from ~2018 onwards (earlier months return error pages)
+HISTORY_YEARS = 7
+
+# Local cache directory for downloaded PLACSP ZIPs (avoids re-downloading ~150MB files)
+CACHE_DIR = os.environ.get("PLACSP_CACHE_DIR", "/app/cache/placsp")
 
 def _get_initial_months() -> list[str]:
     """Generate YYYYMM strings for the last 10 years of monthly data."""
@@ -300,7 +304,19 @@ def _parse_contract_entry(entry) -> Optional[dict]:
     fecha_adj_str = _text(cfs, f"{tr_base}/cbc:AwardDate")
     fecha_adjudicacion = _parse_date(fecha_adj_str)
 
-    importe_adjudicacion = _float_val(cfs, f"{tr_base}/cbc:AwardAmount")
+    # PLACSP uses PayableAmount (IVA incl.) inside AwardedTenderedProject,
+    # or LowerTenderAmount as a direct child of TenderResult.
+    importe_adjudicacion = _float_val(
+        cfs,
+        f"{tr_base}/cac:AwardedTenderedProject/cac:LegalMonetaryTotal/cbc:PayableAmount",
+    )
+    if importe_adjudicacion is None:
+        importe_adjudicacion = _float_val(
+            cfs,
+            f"{tr_base}/cac:AwardedTenderedProject/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount",
+        )
+    if importe_adjudicacion is None:
+        importe_adjudicacion = _float_val(cfs, f"{tr_base}/cbc:LowerTenderAmount")
 
     # Winner
     adjudicatario = _text(
@@ -434,27 +450,41 @@ def _process_zip_file(zip_path: str) -> list[dict]:
     return all_contracts
 
 
-def _download_and_process_zip(url: str, http_session) -> list[dict]:
-    """Download a PLACSP ZIP file to /tmp, process it, and clean up."""
-    # Create temp file
-    fd, tmp_path = tempfile.mkstemp(suffix=".zip", prefix="placsp_")
-    os.close(fd)
+def _download_and_process_zip(url: str, http_session, force_download: bool = False) -> list[dict]:
+    """Download a PLACSP ZIP file (with local cache) and process it.
 
-    try:
-        success = download_file(url, tmp_path, session=http_session, timeout=(10, 600))
+    Cache logic:
+    - Files are saved to CACHE_DIR using the URL filename as key.
+    - If the file already exists locally, skip the download entirely.
+    - Set force_download=True to re-download even if cached.
+    """
+    os.makedirs(CACHE_DIR, exist_ok=True)
+
+    # Derive a stable filename from the URL
+    filename = url.rsplit("/", 1)[-1]
+    cached_path = os.path.join(CACHE_DIR, filename)
+
+    # Minimum size for a valid ZIP (error pages from PLACSP are ~521 bytes)
+    MIN_ZIP_SIZE = 10_000
+
+    if os.path.exists(cached_path) and os.path.getsize(cached_path) > MIN_ZIP_SIZE and not force_download:
+        logger.info(f"  Using cached file: {cached_path}")
+    else:
+        success = download_file(url, cached_path, session=http_session, timeout=(10, 600))
         if not success:
             logger.warning(f"Failed to download: {url}")
             return []
 
-        contracts = _process_zip_file(tmp_path)
-        return contracts
-    finally:
-        # Always clean up temp file
-        try:
-            os.unlink(tmp_path)
-            logger.debug(f"Cleaned up temp file: {tmp_path}")
-        except OSError:
-            pass
+        # Validate: if the file is too small, it's an error page, not a ZIP
+        file_size = os.path.getsize(cached_path)
+        if file_size < MIN_ZIP_SIZE:
+            logger.warning(f"  File too small ({file_size} bytes), likely not a valid ZIP — skipping")
+            os.unlink(cached_path)
+            return []
+
+        logger.info(f"  Downloaded and cached: {cached_path}")
+
+    return _process_zip_file(cached_path)
 
 
 def _build_company_stats(session):

@@ -17,7 +17,7 @@ from datetime import date
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from db import get_session, EstadisticaClave
-from utils import fetch_json, create_http_session
+from utils import fetch_json, fetch_json_cached, create_http_session
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,13 @@ def _fetch_population_from_ine(http_session) -> dict | None:
     """
     url = INE_POPULATION_TABLE_URL
     params = {"nult": "2"}
-    data = fetch_json(url, params=params, session=http_session)
+    data = fetch_json_cached(
+        url,
+        params=params,
+        session=http_session,
+        cache_subdir="ine",
+        cache_filename="poblacion_tabla_2911",
+    )
 
     if not data or not isinstance(data, list):
         logger.error("Failed to fetch population data from INE API or unexpected format")
@@ -136,14 +142,17 @@ def _fetch_vehicle_data(http_session) -> dict | None:
     )
     params = {"query": "TITLE EQ 'parque'", "limit": "10"}
 
-    data = fetch_json(search_url, params=params, session=http_session)
+    data = fetch_json_cached(
+        search_url,
+        params=params,
+        session=http_session,
+        cache_subdir="istac",
+        cache_filename="vehicle_operations",
+    )
     if data and isinstance(data, dict):
         operations = data.get("operation", [])
         if operations:
             logger.info(f"Found {len(operations)} ISTAC operations related to vehicles")
-            # TODO: Parse and extract vehicle data from ISTAC when the specific
-            # indicator/table is identified. The ISTAC statistical resources API
-            # requires knowing the exact operation/resource ID.
         else:
             logger.info("No vehicle-related operations found in ISTAC search")
 
@@ -153,7 +162,13 @@ def _fetch_vehicle_data(http_session) -> dict | None:
         "/indicators.json"
     )
     params = {"q": "TITLE LIKE 'vehículo'", "limit": "10"}
-    data = fetch_json(indicators_url, params=params, session=http_session)
+    data = fetch_json_cached(
+        indicators_url,
+        params=params,
+        session=http_session,
+        cache_subdir="istac",
+        cache_filename="vehicle_indicators",
+    )
     if data and isinstance(data, dict):
         indicators = data.get("items", [])
         if indicators:

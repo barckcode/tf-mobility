@@ -75,12 +75,6 @@ const ROAD_ROUTES: Record<string, string> = {
   'TF-655': 'San Miguel – Guía de Isora',
 };
 
-/** Get a display label for a road code, e.g. "TF-5 (SC – La Laguna)" */
-function roadLabel(code: string): string {
-  const route = ROAD_ROUTES[code];
-  return route ? `${code} (${route})` : code;
-}
-
 /** Short route only, e.g. "SC – La Laguna" */
 function roadRoute(code: string): string {
   return ROAD_ROUTES[code] || '';
@@ -237,7 +231,7 @@ export function TrafficIntensity() {
     return ((latestImd - earliestImd) / earliestImd) * 100;
   })();
 
-  // Bar chart data — top 10 roads for latest year
+  // Bar chart data — top 10 roads for latest year (short code only)
   const barChartData = latestData
     ? latestData.roads_summary
         .filter((r) => r.max_imd > 0)
@@ -245,10 +239,19 @@ export function TrafficIntensity() {
         .slice(0, BAR_CHART_ROADS)
         .reverse()
         .map((r) => ({
-          road: roadLabel(r.road),
+          road: r.road,
           imd: r.max_imd,
           stations: r.stations,
         }))
+    : [];
+
+  // All roads present in charts (for the legend table)
+  const chartRoads = latestData
+    ? latestData.roads_summary
+        .filter((r) => r.max_imd > 0)
+        .sort((a, b) => b.max_imd - a.max_imd)
+        .slice(0, BAR_CHART_ROADS)
+        .map((r) => r.road)
     : [];
 
   const isLoading = latestLoading || evolution.loading;
@@ -402,7 +405,7 @@ export function TrafficIntensity() {
                         {...DARK_TOOLTIP}
                         formatter={(value: number, name: string) => [
                           fmtEs(value) + ' veh/día',
-                          name,
+                          `${name} — ${roadRoute(name)}`,
                         ]}
                         labelFormatter={(label: string) => `Año ${label}`}
                       />
@@ -414,7 +417,7 @@ export function TrafficIntensity() {
                           key={road}
                           type="monotone"
                           dataKey={road}
-                          name={roadLabel(road)}
+                          name={road}
                           stroke={LINE_COLORS[road] ?? '#8b5cf6'}
                           strokeWidth={2.5}
                           dot={{ r: 4, fill: LINE_COLORS[road] ?? '#8b5cf6' }}
@@ -496,10 +499,13 @@ export function TrafficIntensity() {
                         ]}
                         labelFormatter={(label: string, payload) => {
                           const item = payload?.[0]?.payload as
-                            | { stations?: number }
+                            | { road?: string; stations?: number }
                             | undefined;
+                          const road = item?.road ?? label;
+                          const route = roadRoute(road);
                           const stationCount = item?.stations ?? 0;
-                          return `${label} — ${stationCount} estación${stationCount !== 1 ? 'es' : ''} de aforo`;
+                          const routeStr = route ? ` · ${route}` : '';
+                          return `${road}${routeStr} — ${stationCount} estación${stationCount !== 1 ? 'es' : ''} de aforo`;
                         }}
                       />
                       <Bar dataKey="imd" radius={[0, 6, 6, 0]} barSize={18}>
@@ -509,6 +515,38 @@ export function TrafficIntensity() {
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+
+            {/* ── Section 4: Road codes legend ─────────────── */}
+            {chartRoads.length > 0 && (
+              <div
+                className={`rounded-xl bg-brand-card border border-brand-border p-6
+                            transition-all duration-700 delay-[450ms]
+                            ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+              >
+                <h3 className="text-lg font-semibold mb-1">
+                  Leyenda de carreteras
+                </h3>
+                <p className="text-xs text-slate-400 mb-4">
+                  Trayecto correspondiente a cada código viario
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5">
+                  {chartRoads.map((code) => (
+                    <div
+                      key={code}
+                      className="flex items-baseline gap-2 py-1 border-b border-brand-border/50 last:border-0"
+                    >
+                      <span className="font-mono text-sm font-semibold text-white whitespace-nowrap">
+                        {code}
+                      </span>
+                      <span className="text-sm text-slate-400 truncate">
+                        {roadRoute(code) || '—'}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
