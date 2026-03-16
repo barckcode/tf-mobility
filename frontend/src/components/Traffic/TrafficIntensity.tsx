@@ -43,6 +43,49 @@ const LINE_COLORS: Record<string, string> = {
   'TF-28': '#94a3b8',
 };
 
+/** Human-readable route descriptions for major Tenerife roads */
+const ROAD_ROUTES: Record<string, string> = {
+  'TF-1': 'Santa Cruz – Adeje (Autopista del Sur)',
+  'TF-2': 'Adeje – Santiago del Teide',
+  'TF-4': 'Enlace Puerto de SC de Tenerife',
+  'TF-5': 'Santa Cruz – La Laguna – Icod (Autopista del Norte)',
+  'TF-11': 'Dársena – Refinería (Santa Cruz)',
+  'TF-12': 'Santa Cruz – San Andrés – Anaga',
+  'TF-13': 'La Laguna – Vía de Ronda',
+  'TF-16': 'Tacoronte – El Sauzal – La Matanza',
+  'TF-21': 'La Orotava – Teide',
+  'TF-24': 'La Laguna – El Portillo – Teide',
+  'TF-28': 'Granadilla – San Isidro – Arico',
+  'TF-29': 'Cho – Vilaflor',
+  'TF-31': 'Guía de Isora – Buenavista',
+  'TF-42': 'El Médano – Granadilla',
+  'TF-47': 'Arona – Los Cristianos',
+  'TF-51': 'Las Galletas – Valle San Lorenzo',
+  'TF-52': 'Los Cristianos – Playa de las Américas',
+  'TF-66': 'San Isidro – El Médano – Los Abrigos',
+  'TF-82': 'Santiago del Teide – Masca',
+  'TF-111': 'Santa Cruz – Las Teresitas',
+  'TF-152': 'La Laguna – Tacoronte (medianías)',
+  'TF-154': 'La Laguna – Guamasa',
+  'TF-156': 'Guamasa – Boquerón – Tacoronte',
+  'TF-211': 'Ramal a La Orotava',
+  'TF-217': 'La Victoria – Santa Úrsula',
+  'TF-481': 'Adeje – Playa Paraíso',
+  'TF-652': 'Arona – Vilaflor',
+  'TF-655': 'San Miguel – Guía de Isora',
+};
+
+/** Get a display label for a road code, e.g. "TF-5 (SC – La Laguna)" */
+function roadLabel(code: string): string {
+  const route = ROAD_ROUTES[code];
+  return route ? `${code} (${route})` : code;
+}
+
+/** Short route only, e.g. "SC – La Laguna" */
+function roadRoute(code: string): string {
+  return ROAD_ROUTES[code] || '';
+}
+
 const TOP_ROADS_COUNT = 5;
 const BAR_CHART_ROADS = 10;
 
@@ -202,7 +245,7 @@ export function TrafficIntensity() {
         .slice(0, BAR_CHART_ROADS)
         .reverse()
         .map((r) => ({
-          road: r.road,
+          road: roadLabel(r.road),
           imd: r.max_imd,
           stations: r.stations,
         }))
@@ -280,7 +323,7 @@ export function TrafficIntensity() {
                   </p>
                 )}
                 <p className="text-xs text-slate-500 mt-1">
-                  Padre Anchieta (SC – La Laguna)
+                  {busiestRoad ? roadRoute(busiestRoad.road) : '—'}
                 </p>
               </div>
 
@@ -371,7 +414,7 @@ export function TrafficIntensity() {
                           key={road}
                           type="monotone"
                           dataKey={road}
-                          name={road}
+                          name={roadLabel(road)}
                           stroke={LINE_COLORS[road] ?? '#8b5cf6'}
                           strokeWidth={2.5}
                           dot={{ r: 4, fill: LINE_COLORS[road] ?? '#8b5cf6' }}
