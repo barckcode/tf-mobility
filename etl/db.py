@@ -160,6 +160,52 @@ class ComparativaIsla(Base):
     fuente = Column(String(200))
 
 
+class ParadaGuagua(Base):
+    """Bus stop from TITSA GTFS data."""
+    __tablename__ = "paradas_guagua"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    stop_id = Column(String(20), unique=True, nullable=False)
+    name = Column(String(300))
+    lat = Column(Float)
+    lon = Column(Float)
+
+
+class RutaGuagua(Base):
+    """Bus route from TITSA GTFS data."""
+    __tablename__ = "rutas_guagua"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    route_id = Column(String(20), unique=True, nullable=False)
+    short_name = Column(String(50))
+    long_name = Column(String(300))
+    color = Column(String(10))
+
+
+class FrecuenciaParada(Base):
+    """Pre-computed bus frequency per stop on a typical weekday."""
+    __tablename__ = "frecuencia_paradas"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    stop_id = Column(String(20), unique=True, nullable=False)
+    buses_dia = Column(Integer, default=0)
+    rutas_count = Column(Integer, default=0)
+
+
+class RutaTramo(Base):
+    """Pre-computed route-to-road corridor overlap."""
+    __tablename__ = "rutas_tramo"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    route_id = Column(String(20), nullable=False)
+    carretera = Column(String(20), nullable=False)
+    overlap_description = Column(Text)
+
+    __table_args__ = (
+        UniqueConstraint("route_id", "carretera", name="uq_ruta_tramo_carretera"),
+    )
+
+
 class EtlRun(Base):
     """Tracks ETL pipeline execution history for data freshness monitoring."""
     __tablename__ = "etl_runs"

@@ -11,6 +11,7 @@ from app.routers import (
     comparison_router,
     freshness_router,
     traffic_router,
+    transit_router,
 )
 
 app = FastAPI(
@@ -35,6 +36,7 @@ app.include_router(alternatives_router, prefix=settings.api_v1_prefix)
 app.include_router(comparison_router, prefix=settings.api_v1_prefix)
 app.include_router(freshness_router, prefix=settings.api_v1_prefix)
 app.include_router(traffic_router, prefix=settings.api_v1_prefix)
+app.include_router(transit_router, prefix=settings.api_v1_prefix)
 
 
 @app.get(f"{settings.api_v1_prefix}/health")

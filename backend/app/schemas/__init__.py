@@ -18,6 +18,16 @@ from app.schemas.projects import (
     ProjectsListResponse,
 )
 from app.schemas.freshness import PipelineFreshness, FreshnessResponse
+from app.schemas.transit import (
+    BusStopResponse,
+    BusRouteResponse,
+    TransitStopsResponse,
+    TransitRoutesResponse,
+    TransitSummaryResponse,
+    CorridorRouteResponse,
+    CorridorResponse,
+    TransitCorridorsResponse,
+)
 
 __all__ = [
     "StatsResponse",
@@ -35,4 +45,12 @@ __all__ = [
     "StationResponse",
     "TrafficResponse",
     "TrafficYearsResponse",
+    "BusStopResponse",
+    "BusRouteResponse",
+    "TransitStopsResponse",
+    "TransitRoutesResponse",
+    "TransitSummaryResponse",
+    "CorridorRouteResponse",
+    "CorridorResponse",
+    "TransitCorridorsResponse",
 ]
