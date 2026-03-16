@@ -36,6 +36,12 @@ def get_comparison(db: Session = Depends(get_db)):
     """Comparative data across Canary Islands and reference islands."""
     all_islands = db.query(ComparativaIsla).order_by(ComparativaIsla.isla).all()
 
+    if not all_islands:
+        return ComparisonResponse(
+            islands=[], canary_islands=[], reference_islands=[],
+            highlights={"status": "No data loaded yet — ETL pipeline pending"},
+        )
+
     canary = [i for i in all_islands if i.comunidad == "Canarias"]
     reference = [i for i in all_islands if i.comunidad != "Canarias"]
 
