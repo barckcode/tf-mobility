@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const NAV_ITEMS = [
+  { id: 'sources', label: 'Fuentes' },
   { id: 'hero', label: 'El Impacto' },
   { id: 'tourism', label: 'Turismo' },
   { id: 'contracts', label: 'El Dinero Público' },

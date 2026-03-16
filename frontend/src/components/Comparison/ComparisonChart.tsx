@@ -33,7 +33,9 @@ export function ComparisonChart({ islands }: ComparisonChartProps) {
   return (
     <div className="rounded-xl bg-brand-card border border-brand-border p-6">
       <h3 className="text-lg font-semibold mb-1">Inversión en carreteras por isla</h3>
-      <p className="text-xs text-slate-400 mb-6">Presupuesto en infraestructura viaria (Canarias)</p>
+      <p className="text-xs text-slate-400 mb-6">
+        Presupuesto en infraestructura viaria · Fuente: INE, ISTAC, DGT · Datos 2023
+      </p>
 
       <div className="h-[300px] sm:h-[350px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -58,12 +60,16 @@ export function ComparisonChart({ islands }: ComparisonChartProps) {
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#0f172a',
+                backgroundColor: '#1e293b',
                 border: '1px solid #334155',
-                borderRadius: '12px',
-                color: '#fff',
+                borderRadius: '8px',
+                color: '#e2e8f0',
                 fontSize: '13px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
               }}
+              itemStyle={{ color: '#e2e8f0' }}
+              labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
+              cursor={{ fill: 'rgba(59, 130, 246, 0.08)' }}
               formatter={(value: number) => [
                 new Intl.NumberFormat('es-ES', {
                   style: 'currency',

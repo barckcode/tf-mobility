@@ -36,7 +36,9 @@ export function RankingChart({ rankings }: RankingChartProps) {
   return (
     <div className="rounded-xl bg-brand-card border border-brand-border p-6">
       <h3 className="text-lg font-semibold mb-1">Top 10 Adjudicatarios</h3>
-      <p className="text-xs text-slate-400 mb-6">Por importe total adjudicado</p>
+      <p className="text-xs text-slate-400 mb-6">
+        Por importe total adjudicado · Fuente: PLACSP · Contratos del Cabildo de Tenerife
+      </p>
 
       <div className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -61,12 +63,16 @@ export function RankingChart({ rankings }: RankingChartProps) {
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#0f172a',
+                backgroundColor: '#1e293b',
                 border: '1px solid #334155',
-                borderRadius: '12px',
-                color: '#fff',
+                borderRadius: '8px',
+                color: '#e2e8f0',
                 fontSize: '13px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
               }}
+              itemStyle={{ color: '#e2e8f0' }}
+              labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
+              cursor={{ fill: 'rgba(59, 130, 246, 0.08)' }}
               formatter={(value: number) => [
                 new Intl.NumberFormat('es-ES', {
                   style: 'currency',
