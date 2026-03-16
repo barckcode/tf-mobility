@@ -3,6 +3,7 @@ import { getContracts, getRankings } from '@/lib/api';
 import { useFetch } from '@/hooks/useFetch';
 import { ContractFiltersBar } from './ContractFilters';
 import { ContractTable } from './ContractTable';
+import { ContractsSummary } from './ContractsSummary';
 import { RankingChart } from './RankingChart';
 import { Pagination } from './Pagination';
 import { TableSkeleton, CardSkeleton } from '@/components/ui/Skeleton';
@@ -70,6 +71,9 @@ export function Contracts() {
             y descubre a dónde va el dinero de todos.
           </p>
         </div>
+
+        {/* Summary KPI cards */}
+        <ContractsSummary />
 
         {/* Rankings chart */}
         <div className="mb-12">

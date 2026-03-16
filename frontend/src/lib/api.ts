@@ -8,6 +8,9 @@ import type {
   AlternativesResponse,
   ComparisonResponse,
   FreshnessResponse,
+  TrafficResponse,
+  TrafficYearsResponse,
+  ContractsSummaryResponse,
 } from '@/types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -66,4 +69,17 @@ export async function getComparison(): Promise<ComparisonResponse> {
 
 export async function getFreshness(): Promise<FreshnessResponse> {
   return fetchJSON<FreshnessResponse>(`${API_BASE}/metadata/freshness`);
+}
+
+export async function getTraffic(year?: number): Promise<TrafficResponse> {
+  const params = year ? `?year=${year}` : '';
+  return fetchJSON<TrafficResponse>(`${API_BASE}/traffic${params}`);
+}
+
+export async function getTrafficYears(): Promise<TrafficYearsResponse> {
+  return fetchJSON<TrafficYearsResponse>(`${API_BASE}/traffic/years`);
+}
+
+export async function getContractsSummary(): Promise<ContractsSummaryResponse> {
+  return fetchJSON<ContractsSummaryResponse>(`${API_BASE}/contracts/summary`);
 }

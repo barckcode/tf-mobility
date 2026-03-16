@@ -4,6 +4,12 @@ from app.schemas.contracts import (
     ContractsListResponse,
     CompanyRanking,
     RankingsResponse,
+    ContractsSummaryResponse,
+)
+from app.schemas.traffic import (
+    StationResponse,
+    TrafficResponse,
+    TrafficYearsResponse,
 )
 from app.schemas.projects import (
     ProjectSource,
@@ -25,4 +31,8 @@ __all__ = [
     "ProjectsListResponse",
     "PipelineFreshness",
     "FreshnessResponse",
+    "ContractsSummaryResponse",
+    "StationResponse",
+    "TrafficResponse",
+    "TrafficYearsResponse",
 ]

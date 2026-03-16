@@ -12,6 +12,7 @@ from app.schemas.contracts import (
     ContractsListResponse,
     CompanyRanking,
     RankingsResponse,
+    ContractsSummaryResponse,
 )
 
 router = APIRouter(tags=["contracts"])
@@ -83,6 +84,93 @@ def list_contracts(
         page=page,
         size=size,
         pages=pages,
+    )
+
+
+@router.get("/contracts/summary", response_model=ContractsSummaryResponse)
+def get_contracts_summary(db: Session = Depends(get_db)):
+    """Aggregated summary of all contracts."""
+    total_contracts = db.query(Contrato).count()
+
+    total_licitacion = (
+        db.query(func.sum(Contrato.importe_licitacion)).scalar() or 0.0
+    )
+    total_adjudicacion = (
+        db.query(func.sum(Contrato.importe_adjudicacion)).scalar() or 0.0
+    )
+
+    # Contracts by year
+    by_year_rows = (
+        db.query(
+            func.strftime("%Y", Contrato.fecha_publicacion).label("year"),
+            func.count(Contrato.id).label("count"),
+            func.sum(Contrato.importe_adjudicacion).label("amount"),
+        )
+        .filter(Contrato.fecha_publicacion.isnot(None))
+        .group_by(func.strftime("%Y", Contrato.fecha_publicacion))
+        .order_by(func.strftime("%Y", Contrato.fecha_publicacion).desc())
+        .all()
+    )
+    contracts_by_year = [
+        {"year": int(r.year), "count": r.count, "amount": r.amount or 0.0}
+        for r in by_year_rows
+        if r.year
+    ]
+
+    # Contracts by type
+    by_type_rows = (
+        db.query(
+            Contrato.tipo,
+            func.count(Contrato.id).label("count"),
+        )
+        .filter(Contrato.tipo.isnot(None))
+        .group_by(Contrato.tipo)
+        .order_by(func.count(Contrato.id).desc())
+        .all()
+    )
+    contracts_by_type = [
+        {"type": r.tipo, "count": r.count} for r in by_type_rows
+    ]
+
+    # Contracts by status
+    by_status_rows = (
+        db.query(
+            Contrato.estado,
+            func.count(Contrato.id).label("count"),
+        )
+        .filter(Contrato.estado.isnot(None))
+        .group_by(Contrato.estado)
+        .order_by(func.count(Contrato.id).desc())
+        .all()
+    )
+    contracts_by_status = [
+        {"status": r.estado, "count": r.count} for r in by_status_rows
+    ]
+
+    # Top roads
+    top_roads_rows = (
+        db.query(
+            Contrato.carretera,
+            func.count(Contrato.id).label("count"),
+        )
+        .filter(Contrato.carretera.isnot(None))
+        .group_by(Contrato.carretera)
+        .order_by(func.count(Contrato.id).desc())
+        .limit(20)
+        .all()
+    )
+    top_roads = [
+        {"road": r.carretera, "count": r.count} for r in top_roads_rows
+    ]
+
+    return ContractsSummaryResponse(
+        total_contracts=total_contracts,
+        total_licitacion_amount=total_licitacion,
+        total_adjudicacion_amount=total_adjudicacion,
+        contracts_by_year=contracts_by_year,
+        contracts_by_type=contracts_by_type,
+        contracts_by_status=contracts_by_status,
+        top_roads=top_roads,
     )
 
 

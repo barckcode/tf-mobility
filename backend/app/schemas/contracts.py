@@ -33,3 +33,13 @@ class CompanyRanking(BaseModel):
 
 class RankingsResponse(BaseModel):
     top_companies: list[CompanyRanking]
+
+
+class ContractsSummaryResponse(BaseModel):
+    total_contracts: int
+    total_licitacion_amount: float
+    total_adjudicacion_amount: float
+    contracts_by_year: list[dict]  # [{year: 2024, count: 150, amount: 50000000}]
+    contracts_by_type: list[dict]  # [{type: "obras", count: 200}]
+    contracts_by_status: list[dict]  # [{status: "adjudicado", count: 100}]
+    top_roads: list[dict]  # [{road: "TF-5", count: 20}]

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 const NAV_ITEMS = [
   { id: 'sources', label: 'Fuentes' },
   { id: 'hero', label: 'El Impacto' },
+  { id: 'traffic', label: 'Tráfico' },
   { id: 'tourism', label: 'Turismo' },
   { id: 'contracts', label: 'El Dinero Público' },
   { id: 'promises', label: 'Promesas vs Realidad' },

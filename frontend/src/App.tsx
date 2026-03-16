@@ -1,6 +1,7 @@
 import { Header } from '@/components/Header/Header';
 import { DataSources } from '@/components/DataSources/DataSources';
 import { Hero } from '@/components/Hero/Hero';
+import { TrafficIntensity } from '@/components/Traffic/TrafficIntensity';
 import { Tourism } from '@/components/Tourism/Tourism';
 import { Contracts } from '@/components/Contracts/Contracts';
 import { Promises } from '@/components/Promises/Promises';
@@ -16,6 +17,7 @@ function App() {
       <main>
         <DataSources />
         <Hero />
+        <TrafficIntensity />
         <Tourism />
         <Contracts />
         <Promises />

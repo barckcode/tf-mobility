@@ -136,6 +136,49 @@ export interface ComparisonResponse {
   highlights: Record<string, string>;
 }
 
+// S1 — Traffic Intensity
+export interface TrafficStation {
+  id: number;
+  year: number;
+  road: string;
+  section: string;
+  station_id: number;
+  station_name: string;
+  imd_total: number | null;
+  imd_ascending: number | null;
+  imd_descending: number | null;
+  imd_heavy: number | null;
+  avg_speed: number | null;
+}
+
+export interface RoadSummary {
+  road: string;
+  max_imd: number;
+  stations: number;
+}
+
+export interface TrafficResponse {
+  stations: TrafficStation[];
+  total: number;
+  year: number;
+  roads_summary: RoadSummary[];
+}
+
+export interface TrafficYearsResponse {
+  available_years: number[];
+}
+
+// S3 — Contracts Summary
+export interface ContractsSummaryResponse {
+  total_contracts: number;
+  total_licitacion_amount: number;
+  total_adjudicacion_amount: number;
+  contracts_by_year: { year: number; count: number; amount: number }[];
+  contracts_by_type: { type: string; count: number }[];
+  contracts_by_status: { status: string; count: number }[];
+  top_roads: { road: string; count: number }[];
+}
+
 // Metadata — Data freshness
 export interface PipelineFreshness {
   pipeline: string;

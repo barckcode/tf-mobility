@@ -5,6 +5,7 @@ from app.models.turismo import TurismoMensual
 from app.models.empresa import Empresa
 from app.models.carretera import Carretera
 from app.models.etl_run import EtlRun
+from app.models.estacion_aforo import EstacionAforo
 
 __all__ = [
     "Contrato",
@@ -14,4 +15,5 @@ __all__ = [
     "Empresa",
     "Carretera",
     "EtlRun",
+    "EstacionAforo",
 ]
