@@ -45,19 +45,19 @@ export function Alternatives() {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 max-w-md">
               <div className="rounded-xl bg-green/10 border border-green/20 p-4 text-center">
                 <p className="font-mono text-2xl font-bold text-green">
-                  {data.alternatives.filter((a) => a.status === 'active').length}
+                  {data.alternatives.filter((a) => a.status === 'operativo').length}
                 </p>
                 <p className="text-xs text-green/70 mt-1">Operativos</p>
               </div>
               <div className="rounded-xl bg-brand-blue/10 border border-brand-blue/20 p-4 text-center">
                 <p className="font-mono text-2xl font-bold text-brand-blue">
-                  {data.alternatives.filter((a) => a.status === 'planned').length}
+                  {data.alternatives.filter((a) => a.status === 'en_estudio' || a.status === 'futuro').length}
                 </p>
                 <p className="text-xs text-brand-blue/70 mt-1">Planificados</p>
               </div>
               <div className="rounded-xl bg-yellow/10 border border-yellow/20 p-4 text-center">
                 <p className="font-mono text-2xl font-bold text-yellow">
-                  {data.alternatives.filter((a) => a.status === 'limited').length}
+                  {data.alternatives.filter((a) => a.status === 'fragmentado').length}
                 </p>
                 <p className="text-xs text-yellow/70 mt-1">Limitados</p>
               </div>

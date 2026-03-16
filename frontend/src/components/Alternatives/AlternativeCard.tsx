@@ -14,15 +14,17 @@ const TYPE_ICONS: Record<string, string> = {
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  active: { label: 'Operativo', color: 'text-green', bg: 'bg-green/10' },
-  planned: { label: 'Planificado', color: 'text-brand-blue', bg: 'bg-brand-blue/10' },
-  limited: { label: 'Limitado', color: 'text-yellow', bg: 'bg-yellow/10' },
-  suspended: { label: 'Suspendido', color: 'text-red-accent', bg: 'bg-red-accent/10' },
+  operativo: { label: 'Operativo', color: 'text-green', bg: 'bg-green/10' },
+  en_estudio: { label: 'En estudio', color: 'text-brand-blue', bg: 'bg-brand-blue/10' },
+  futuro: { label: 'Planificado', color: 'text-brand-blue', bg: 'bg-brand-blue/10' },
+  fragmentado: { label: 'Fragmentado', color: 'text-yellow', bg: 'bg-yellow/10' },
+  reciente: { label: 'Reciente', color: 'text-green', bg: 'bg-green/10' },
+  suspendido: { label: 'Suspendido', color: 'text-red-accent', bg: 'bg-red-accent/10' },
 };
 
 export function AlternativeCard({ alternative }: AlternativeCardProps) {
   const icon = TYPE_ICONS[alternative.type] || '\u{1F698}';
-  const status = STATUS_CONFIG[alternative.status] || STATUS_CONFIG.limited;
+  const status = STATUS_CONFIG[alternative.status] || STATUS_CONFIG.fragmentado;
 
   return (
     <div className="rounded-xl bg-brand-card border border-brand-border p-5 hover:border-green/30 transition-colors">
@@ -38,19 +40,19 @@ export function AlternativeCard({ alternative }: AlternativeCardProps) {
           <p className="text-sm text-slate-400 mb-3">{alternative.description}</p>
 
           <div className="flex flex-wrap gap-4 text-xs">
-            {alternative.users_annual != null && alternative.users_annual > 0 && (
+            {alternative.annual_users != null && alternative.annual_users > 0 && (
               <div>
                 <span className="text-slate-500">Usuarios/año: </span>
                 <span className="font-mono font-medium text-green">
-                  {alternative.users_annual.toLocaleString('es-ES')}
+                  {(alternative.annual_users || 0).toLocaleString('es-ES')}
                 </span>
               </div>
             )}
-            {alternative.coverage_pct != null && alternative.coverage_pct > 0 && (
+            {alternative.coverage && (
               <div>
                 <span className="text-slate-500">Cobertura: </span>
                 <span className="font-mono font-medium text-green">
-                  {alternative.coverage_pct}%
+                  {alternative.coverage}
                 </span>
               </div>
             )}

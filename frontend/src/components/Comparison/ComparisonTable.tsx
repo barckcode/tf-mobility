@@ -5,7 +5,7 @@ interface ComparisonTableProps {
 }
 
 export function ComparisonTable({ islands }: ComparisonTableProps) {
-  const sorted = [...islands].sort((a, b) => b.tourists_per_inhabitant - a.tourists_per_inhabitant);
+  const sorted = [...islands].sort((a, b) => (b.tourist_resident_ratio || 0) - (a.tourist_resident_ratio || 0));
 
   return (
     <div className="rounded-xl bg-brand-card border border-brand-border p-6">
@@ -29,20 +29,20 @@ export function ComparisonTable({ islands }: ComparisonTableProps) {
               <tr key={island.island} className="border-b border-brand-border/50">
                 <td className="py-3 pr-4 font-medium">{island.island}</td>
                 <td className="py-3 pr-4 text-right text-slate-300 font-mono">
-                  {island.population.toLocaleString('es-ES')}
+                  {(island.population || 0).toLocaleString('es-ES')}
                 </td>
                 <td className="py-3 pr-4 text-right font-mono">
-                  <span className={island.vehicle_density > 250 ? 'text-red-accent' : 'text-slate-300'}>
-                    {island.vehicle_density.toLocaleString('es-ES', { maximumFractionDigits: 0 })}
+                  <span className={(island.cars_per_km2 || 0) > 250 ? 'text-red-accent' : 'text-slate-300'}>
+                    {(island.cars_per_km2 || 0).toLocaleString('es-ES', { maximumFractionDigits: 0 })}
                   </span>
                 </td>
                 <td className="py-3 pr-4 text-right font-mono">
-                  <span className={island.tourists_per_inhabitant > 5 ? 'text-yellow' : 'text-slate-300'}>
-                    {island.tourists_per_inhabitant.toFixed(1)}
+                  <span className={(island.tourist_resident_ratio || 0) > 5 ? 'text-yellow' : 'text-slate-300'}>
+                    {(island.tourist_resident_ratio || 0).toFixed(1)}
                   </span>
                 </td>
                 <td className="py-3 text-center">
-                  {island.has_regulation ? (
+                  {island.traffic_regulation && !island.traffic_regulation.toLowerCase().startsWith('no') ? (
                     <span className="inline-flex items-center rounded-full bg-green/10 px-2.5 py-0.5 text-xs font-medium text-green">
                       Sí
                     </span>
@@ -67,7 +67,7 @@ export function ComparisonTable({ islands }: ComparisonTableProps) {
           >
             <div className="flex items-center justify-between mb-2">
               <span className="font-medium">{island.island}</span>
-              {island.has_regulation ? (
+              {island.traffic_regulation && !island.traffic_regulation.toLowerCase().startsWith('no') ? (
                 <span className="rounded-full bg-green/10 px-2 py-0.5 text-xs font-medium text-green">
                   Regulado
                 </span>
@@ -81,19 +81,19 @@ export function ComparisonTable({ islands }: ComparisonTableProps) {
               <div>
                 <span className="text-slate-500 block">Población</span>
                 <span className="font-mono text-slate-300">
-                  {island.population.toLocaleString('es-ES')}
+                  {(island.population || 0).toLocaleString('es-ES')}
                 </span>
               </div>
               <div>
                 <span className="text-slate-500 block">Veh./km²</span>
-                <span className={`font-mono ${island.vehicle_density > 250 ? 'text-red-accent' : 'text-slate-300'}`}>
-                  {island.vehicle_density.toLocaleString('es-ES', { maximumFractionDigits: 0 })}
+                <span className={`font-mono ${(island.cars_per_km2 || 0) > 250 ? 'text-red-accent' : 'text-slate-300'}`}>
+                  {(island.cars_per_km2 || 0).toLocaleString('es-ES', { maximumFractionDigits: 0 })}
                 </span>
               </div>
               <div>
                 <span className="text-slate-500 block">Tur./hab.</span>
-                <span className={`font-mono ${island.tourists_per_inhabitant > 5 ? 'text-yellow' : 'text-slate-300'}`}>
-                  {island.tourists_per_inhabitant.toFixed(1)}
+                <span className={`font-mono ${(island.tourist_resident_ratio || 0) > 5 ? 'text-yellow' : 'text-slate-300'}`}>
+                  {(island.tourist_resident_ratio || 0).toFixed(1)}
                 </span>
               </div>
             </div>

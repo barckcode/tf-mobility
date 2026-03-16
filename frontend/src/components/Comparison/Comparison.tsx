@@ -46,8 +46,8 @@ export function Comparison() {
               <h3 className="text-lg font-semibold mb-4">Presión turística</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {data.islands
-                  .filter((i) => i.tourists_per_inhabitant > 0)
-                  .sort((a, b) => b.tourists_per_inhabitant - a.tourists_per_inhabitant)
+                  .filter((i) => (i.tourist_resident_ratio || 0) > 0)
+                  .sort((a, b) => (b.tourist_resident_ratio || 0) - (a.tourist_resident_ratio || 0))
                   .slice(0, 3)
                   .map((island, idx) => (
                     <div
@@ -58,7 +58,7 @@ export function Comparison() {
                         {idx === 0 ? 'Mayor presión' : `#${idx + 1}`}
                       </p>
                       <p className="font-mono text-2xl font-bold text-yellow">
-                        {island.tourists_per_inhabitant.toFixed(1)}x
+                        {(island.tourist_resident_ratio || 0).toFixed(1)}x
                       </p>
                       <p className="text-sm font-medium mt-1">{island.island}</p>
                       <p className="text-xs text-slate-400 mt-0.5">turistas por habitante</p>

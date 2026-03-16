@@ -24,10 +24,10 @@ const COLORS = ['#3b82f6', '#8b5cf6', '#16C79A', '#F5A623', '#E94560', '#60a5fa'
 
 export function ComparisonChart({ islands }: ComparisonChartProps) {
   const data = [...islands]
-    .sort((a, b) => b.road_investment - a.road_investment)
+    .sort((a, b) => (b.road_investment_m_eur || 0) - (a.road_investment_m_eur || 0))
     .map((island) => ({
       name: island.island,
-      investment: island.road_investment,
+      investment: island.road_investment_m_eur || 0,
     }));
 
   return (

@@ -95,27 +95,45 @@ export interface Alternative {
   name: string;
   type: string;
   description: string;
-  status: string;
-  users_annual?: number;
-  coverage_pct?: number;
+  status: string; // "operativo", "en_estudio", "fragmentado", "reciente"
+  operator?: string;
+  coverage?: string;
+  annual_users?: number;
+  key_fact?: string;
+  color?: string;
+  icon?: string;
+  source_url?: string;
 }
 
 export interface AlternativesResponse {
   alternatives: Alternative[];
+  summary: Record<string, number>;
 }
 
 // S6 — Comparison
 export interface IslandComparison {
+  id: number;
   island: string;
-  vehicle_density: number;
-  tourists_per_inhabitant: number;
-  road_investment: number;
-  has_regulation: boolean;
+  community: string;
   population: number;
+  area_km2: number;
+  annual_tourists: number;
+  tourist_resident_ratio: number;
+  registered_vehicles: number;
+  cars_per_km2: number;
+  road_investment_m_eur: number;
+  road_km: number;
+  has_train: string;
+  has_tram: string;
+  traffic_regulation: string;
+  source: string;
 }
 
 export interface ComparisonResponse {
   islands: IslandComparison[];
+  canary_islands: IslandComparison[];
+  reference_islands: IslandComparison[];
+  highlights: Record<string, string>;
 }
 
 // Metadata — Data freshness
