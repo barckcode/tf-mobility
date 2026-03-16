@@ -42,16 +42,31 @@ CABILDO_TENERIFE_NAME_PATTERNS = ["cabildo", "tenerife"]
 
 # Monthly ZIPs to fetch on initial load (YYYYMM format)
 # Monthly ZIPs are ~120MB vs ~1.6GB for annual — much faster to download/process.
-# We fetch the last 12 months of data for a good initial dataset.
+# Full historical load: 10 years of monthly data (~120 months).
+# After initial load, scheduled runs only fetch the current month.
+HISTORY_YEARS = 10
+
 def _get_initial_months() -> list[str]:
-    """Generate YYYYMM strings for the last 12 months."""
-    from datetime import datetime, timedelta
+    """Generate YYYYMM strings for the last 10 years of monthly data."""
     months = []
     now = datetime.now()
-    for i in range(12):
-        dt = now - timedelta(days=30 * i)
-        months.append(dt.strftime("%Y%m"))
+    for year in range(now.year - HISTORY_YEARS, now.year + 1):
+        end_month = now.month if year == now.year else 12
+        for month in range(1, end_month + 1):
+            months.append(f"{year}{month:02d}")
     return months
+
+
+def _get_update_months() -> list[str]:
+    """Generate YYYYMM strings for just the current and previous month (for scheduled runs)."""
+    now = datetime.now()
+    current = now.strftime("%Y%m")
+    # Also include previous month in case it was updated late
+    if now.month == 1:
+        previous = f"{now.year - 1}12"
+    else:
+        previous = f"{now.year}{now.month - 1:02d}"
+    return [previous, current]
 
 # XML namespaces used in PLACSP feeds
 NAMESPACES = {
@@ -410,18 +425,35 @@ def run() -> int:
     """Fetch real contracts from PLACSP and upsert into database.
 
     Strategy:
-    1. Download annual ZIP files for configured years.
-    2. Parse XML, filter for Cabildo de Tenerife entries.
-    3. Upsert into database (preserving existing data on failure).
-    4. Update company statistics.
+    - If DB is empty: full historical load (last 10 years, monthly ZIPs).
+    - If DB has data: incremental update (last 2 months only).
+    - Parse ATOM/XML, filter for Cabildo de Tenerife entries.
+    - Upsert into database (preserving existing data on failure).
+    - Update company statistics.
 
     Returns the count of records processed.
     """
     http_session = create_http_session()
     all_contracts = []
 
-    # Download and process monthly ZIPs (much smaller than annual ~120MB vs ~1.6GB)
-    months_to_fetch = _get_initial_months()
+    # Decide: initial load vs incremental update
+    db_check = get_session()
+    existing_count = db_check.query(Contrato).count()
+    db_check.close()
+
+    if existing_count > 0:
+        months_to_fetch = _get_update_months()
+        logger.info(
+            f"Incremental update mode: {existing_count} contracts already in DB, "
+            f"fetching {len(months_to_fetch)} recent months"
+        )
+    else:
+        months_to_fetch = _get_initial_months()
+        logger.info(
+            f"Initial load mode: empty DB, fetching {len(months_to_fetch)} months "
+            f"({HISTORY_YEARS} years of history)"
+        )
+
     for yearmonth in months_to_fetch:
         url = PLACSP_MONTHLY_ZIP_URL.format(yearmonth=yearmonth)
         logger.info(f"Processing PLACSP monthly feed: {yearmonth}")
