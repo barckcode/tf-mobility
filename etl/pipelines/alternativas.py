@@ -29,8 +29,8 @@ ALTERNATIVES = [
         "cobertura": "Area metropolitana Santa Cruz - La Laguna",
         "usuarios_anuales": 25000000,
         "dato_clave": (
-            "~25M pasajeros/año (2024). Línea 1: Santa Cruz - La Laguna (12,5 km, 21 paradas). "
-            "Línea 2: La Cuesta - Tíncer (3,6 km, 6 paradas). Frecuencia en hora punta: cada 4,5 minutos. "
+            "~25M pasajeros/año (2024). Línea 1: Santa Cruz - La Laguna (12,5 km). "
+            "Línea 2: La Cuesta - Tíncer (3,6 km). 25 paradas en total (GTFS). Frecuencia en hora punta: cada 4,5 minutos. "
             "86% de usuarios redujeron uso del coche. Valoración: 8,18/10."
         ),
         "descripcion": (
@@ -58,7 +58,7 @@ ALTERNATIVES = [
         ),
         "descripcion": (
             "Red integral de guaguas interurbanas y urbanas operada por TITSA, "
-            "el mayor operador de transporte público de Tenerife. Más de 100 líneas "
+            "el mayor operador de transporte público de Tenerife. 177 líneas "
             "que cubren todos los municipios. Principales nodos: Santa Cruz, La Laguna, "
             "Puerto de la Cruz, Los Cristianos, Costa Adeje. Tarifas fuertemente subvencionadas "
             "desde 2022 (subvención de transporte gratuito del Gobierno de Canarias). "

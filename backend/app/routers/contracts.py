@@ -106,16 +106,16 @@ def get_contracts_summary(db: Session = Depends(get_db)):
         db.query(func.sum(Contrato.importe_adjudicacion)).scalar() or 0.0
     )
 
-    # Contracts by year
+    # Contracts by year (use fecha_adjudicacion — fecha_publicacion is often NULL)
     by_year_rows = (
         db.query(
-            func.strftime("%Y", Contrato.fecha_publicacion).label("year"),
+            func.strftime("%Y", Contrato.fecha_adjudicacion).label("year"),
             func.count(Contrato.id).label("count"),
             func.sum(Contrato.importe_adjudicacion).label("amount"),
         )
-        .filter(Contrato.fecha_publicacion.isnot(None))
-        .group_by(func.strftime("%Y", Contrato.fecha_publicacion))
-        .order_by(func.strftime("%Y", Contrato.fecha_publicacion).desc())
+        .filter(Contrato.fecha_adjudicacion.isnot(None))
+        .group_by(func.strftime("%Y", Contrato.fecha_adjudicacion))
+        .order_by(func.strftime("%Y", Contrato.fecha_adjudicacion).desc())
         .all()
     )
     contracts_by_year = [

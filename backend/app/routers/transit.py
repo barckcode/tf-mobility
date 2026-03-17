@@ -248,8 +248,8 @@ def transit_study(db: Session = Depends(get_db)):
         vtc_coverage="Zona sur: Adeje, Arona, Granadilla, Guía de Isora, Aeropuerto Sur",
         vtc_blocked_applications=9000,
         motorization_index=839.0,
-        population=928604,
-        annual_tourists=7280000,
+        population=1007641,
+        annual_tourists=7412046,
         total_public_transport_passengers=105000000,
         alternatives_verdict=(
             "El transporte público (guaguas + tranvía) mueve ~105M pasajeros/año, "
