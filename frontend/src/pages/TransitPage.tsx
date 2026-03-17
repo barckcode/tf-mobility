@@ -202,6 +202,16 @@ export function TransitPage() {
               y los VTC. Los datos revelan que ninguna de estas opciones ofrece una
               alternativa real al vehiculo privado para la mayoria de la poblacion.
             </p>
+            <a
+              href="https://agentcrew.sh/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 mt-4 px-3 py-1.5 rounded-full
+                         bg-brand-card/60 border border-brand-border/50 text-xs text-slate-400
+                         hover:text-white hover:border-brand-border transition-colors"
+            >
+              Powered by <span className="font-semibold text-slate-300">AgentCrew</span>
+            </a>
           </div>
         </section>
 
@@ -1286,7 +1296,7 @@ export function TransitPage() {
                             {...DARK_TOOLTIP}
                             cursor={{ fill: 'rgba(22, 199, 154, 0.08)' }}
                             formatter={(value: number) => [
-                              fmtEs(value) + ' pasajeros/ano',
+                              fmtEs(value) + ' pasajeros/año',
                               'Pasajeros',
                             ]}
                           />
@@ -1315,7 +1325,7 @@ export function TransitPage() {
                       <p className="font-mono text-2xl font-bold text-[#16C79A]">
                         {formatMillions(study.bus_annual_passengers)}
                       </p>
-                      <p className="text-xs text-slate-500 mt-1">pasajeros/ano</p>
+                      <p className="text-xs text-slate-500 mt-1">pasajeros/año</p>
                       <div className="mt-3 pt-3 border-t border-brand-border/50 text-xs text-slate-400 space-y-1">
                         <p>{fmtEs(study.bus_stops)} paradas</p>
                         <p>{fmtEs(study.bus_routes)} rutas</p>
@@ -1332,7 +1342,7 @@ export function TransitPage() {
                       <p className="font-mono text-2xl font-bold text-[#8b5cf6]">
                         {formatMillions(study.tram_annual_passengers)}
                       </p>
-                      <p className="text-xs text-slate-500 mt-1">pasajeros/ano</p>
+                      <p className="text-xs text-slate-500 mt-1">pasajeros/año</p>
                       <div className="mt-3 pt-3 border-t border-brand-border/50 text-xs text-slate-400 space-y-1">
                         <p>{fmtEs(study.tram_stops)} paradas</p>
                         <p>{study.tram_routes} lineas</p>
@@ -1397,7 +1407,7 @@ export function TransitPage() {
                         <p className="font-mono text-2xl font-bold text-green">
                           {formatMillions(study.total_public_transport_passengers)}
                         </p>
-                        <p className="text-xs text-slate-500">viajes/ano (bus + tranvia)</p>
+                        <p className="text-xs text-slate-500">viajes/año (bus + tranvía)</p>
                       </div>
                       <div>
                         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Resultado</p>

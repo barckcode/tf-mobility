@@ -1,5 +1,6 @@
 import { Header } from '@/components/Header/Header';
 import { Hero } from '@/components/Hero/Hero';
+import { DataSources } from '@/components/DataSources/DataSources';
 import { TrafficIntensity } from '@/components/Traffic/TrafficIntensity';
 import { Tourism } from '@/components/Tourism/Tourism';
 import { Contracts } from '@/components/Contracts/Contracts';
@@ -7,7 +8,6 @@ import { Promises } from '@/components/Promises/Promises';
 import { Alternatives } from '@/components/Alternatives/Alternatives';
 import { Comparison } from '@/components/Comparison/Comparison';
 import { Footer } from '@/components/Footer/Footer';
-import { DataFreshness } from '@/components/DataFreshness/DataFreshness';
 
 export function HomePage() {
   return (
@@ -15,6 +15,7 @@ export function HomePage() {
       <Header />
       <main>
         <Hero />
+        <DataSources />
         <TrafficIntensity />
         <Tourism />
         <Contracts />
@@ -22,7 +23,6 @@ export function HomePage() {
         <Alternatives />
         <Comparison />
       </main>
-      <DataFreshness />
       <Footer />
     </div>
   );

@@ -191,7 +191,7 @@ export function ContractsPage() {
               Observatorio de movilidad
             </p>
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-              Contratos de <span className="text-brand-blue">Movilidad</span>
+              Estudio Contratos de <span className="text-brand-blue">Movilidad</span>
             </h1>
             <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-2">
               Transparencia en la contratación pública
@@ -201,6 +201,16 @@ export function ContractsPage() {
               Todos los datos proceden de la Plataforma de Contratación del Sector Público (PLACSP)
               y son de acceso público.
             </p>
+            <a
+              href="https://agentcrew.sh/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 mt-4 px-3 py-1.5 rounded-full
+                         bg-brand-card/60 border border-brand-border/50 text-xs text-slate-400
+                         hover:text-white hover:border-brand-border transition-colors"
+            >
+              Powered by <span className="font-semibold text-slate-300">AgentCrew</span>
+            </a>
           </div>
         </section>
 
