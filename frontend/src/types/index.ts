@@ -328,7 +328,9 @@ export interface CompanyDirectors {
   directors: DirectorInfo[];
   public_connections: PublicConnection[];
   cnmc_sanction: string | null;
+  cnmc_sanction_url: string | null;
   judicial_cases: string | null;
+  judicial_cases_url: string | null;
   confidence_level: string;
 }
 

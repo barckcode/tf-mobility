@@ -346,7 +346,9 @@ def get_directors_transparency():
                 ),
             ],
             cnmc_sanction=None,
+            cnmc_sanction_url=None,
             judicial_cases="Condena de 23 meses de prisión por estafa continuada (caso Islas Airways, fraude descuento residente, 8,4M\u20ac). Ratificada por el Tribunal Supremo en 2023.",
+            judicial_cases_url="https://www.canarias7.es/economia/supremo-ratifica-delito-20230310173542-nt.html",
             confidence_level="alto",
         ),
         CompanyDirectorsResponse(
@@ -366,7 +368,9 @@ def get_directors_transparency():
                 ),
             ],
             cnmc_sanction="Sacyr: 16,7M\u20ac (cartel obra civil, 2022). Sacyr Conservación: 5,17M\u20ac (cartel conservación carreteras, 2021). Sancionadas por alterar licitaciones durante 25 a\u00f1os.",
+            cnmc_sanction_url="https://www.cnmc.es/prensa/sancionador-obra-civil-20220707",
             judicial_cases=None,
+            judicial_cases_url=None,
             confidence_level="alto",
         ),
         CompanyDirectorsResponse(
@@ -380,7 +384,9 @@ def get_directors_transparency():
             ],
             public_connections=[],
             cnmc_sanction=None,
+            cnmc_sanction_url=None,
             judicial_cases=None,
+            judicial_cases_url=None,
             confidence_level="medio",
         ),
         CompanyDirectorsResponse(
@@ -400,7 +406,9 @@ def get_directors_transparency():
                 ),
             ],
             cnmc_sanction="21,5M\u20ac por cartel de obra civil (2022). Participaci\u00f3n en manipulaci\u00f3n de licitaciones durante 25 a\u00f1os (1992-2017).",
+            cnmc_sanction_url="https://www.cnmc.es/prensa/sancionador-obra-civil-20220707",
             judicial_cases=None,
+            judicial_cases_url=None,
             confidence_level="alto",
         ),
         CompanyDirectorsResponse(
@@ -425,7 +433,9 @@ def get_directors_transparency():
                 ),
             ],
             cnmc_sanction=None,
+            cnmc_sanction_url=None,
             judicial_cases="Condena por cobrar trabajos no realizados en el Puerto de M\u00e1laga. Condena por explotaci\u00f3n ilegal de cantera.",
+            judicial_cases_url="https://www.eldiario.es/andalucia/junta-andalucia-nombra-maxima-autoridad-cambio-climatico-directivo-sando-condenado-explotacion-ilegal-cantera_1_6273084.html",
             confidence_level="alto",
         ),
         CompanyDirectorsResponse(
@@ -450,7 +460,9 @@ def get_directors_transparency():
                 ),
             ],
             cnmc_sanction="57,1M\u20ac (la mayor sanci\u00f3n del cartel de obra civil, 2022). Participaci\u00f3n en manipulaci\u00f3n de miles de licitaciones durante 25 a\u00f1os.",
+            cnmc_sanction_url="https://www.cnmc.es/prensa/sancionador-obra-civil-20220707",
             judicial_cases=None,
+            judicial_cases_url=None,
             confidence_level="alto",
         ),
         CompanyDirectorsResponse(
@@ -464,7 +476,9 @@ def get_directors_transparency():
             ],
             public_connections=[],
             cnmc_sanction=None,
+            cnmc_sanction_url=None,
             judicial_cases=None,
+            judicial_cases_url=None,
             confidence_level="medio",
         ),
     ]

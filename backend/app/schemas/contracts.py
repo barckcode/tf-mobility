@@ -85,7 +85,9 @@ class CompanyDirectorsResponse(BaseModel):
     directors: list[DirectorInfo]
     public_connections: list[PublicConnection]
     cnmc_sanction: str | None = None  # CNMC cartel sanction if applicable
+    cnmc_sanction_url: str | None = None
     judicial_cases: str | None = None  # Public judicial cases if applicable
+    judicial_cases_url: str | None = None
     confidence_level: str  # alto, medio, bajo
 
 

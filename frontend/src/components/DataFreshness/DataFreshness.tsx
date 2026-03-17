@@ -4,46 +4,36 @@ import { useFetch } from '@/hooks/useFetch';
 import { Skeleton } from '@/components/ui/Skeleton';
 import type { PipelineFreshness } from '@/types';
 
-/** Map internal pipeline names to human-readable Spanish labels */
 const PIPELINE_LABELS: Record<string, string> = {
-  turismo: 'Turismo',
-  contratos: 'Contratos publicos',
-  estadisticas: 'Estadisticas',
-  trafico_imd: 'Trafico (IMD)',
-  proyectos: 'Proyectos',
-  alternativas: 'Alternativas',
-  comparativa: 'Comparativa',
+  turismo: 'Turismo (ISTAC)',
+  contratos: 'Contratos públicos (PLACSP)',
+  estadisticas: 'Estadísticas (DGT / ISTAC)',
+  trafico_imd: 'Tráfico IMD (datos.tenerife.es)',
+  proyectos: 'Proyectos de infraestructura',
+  alternativas: 'Alternativas de transporte',
+  comparativa: 'Comparativa insular',
+  transporte_publico: 'Guaguas TITSA (GTFS)',
+  tranvia: 'Tranvía Metrotenerife (GTFS)',
 };
 
-/** Return a Tailwind text-color class based on freshness level */
 function freshnessColor(freshness: string): string {
   switch (freshness) {
-    case 'fresh':
-      return 'bg-green';
-    case 'stale':
-      return 'bg-yellow';
-    case 'outdated':
-      return 'bg-red-accent';
-    default:
-      return 'bg-slate-500';
+    case 'fresh': return 'bg-green';
+    case 'stale': return 'bg-yellow';
+    case 'outdated': return 'bg-red-accent';
+    default: return 'bg-slate-500';
   }
 }
 
-/** Human-readable freshness label in Spanish */
 function freshnessLabel(freshness: string): string {
   switch (freshness) {
-    case 'fresh':
-      return 'Actualizado';
-    case 'stale':
-      return 'Desactualizado';
-    case 'outdated':
-      return 'Obsoleto';
-    default:
-      return 'Desconocido';
+    case 'fresh': return 'Actualizado';
+    case 'stale': return 'Desactualizado';
+    case 'outdated': return 'Obsoleto';
+    default: return 'Desconocido';
   }
 }
 
-/** Format a date string to Spanish locale */
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return 'Nunca';
   try {
@@ -53,11 +43,10 @@ function formatDate(dateStr: string | null): string {
       year: 'numeric',
     });
   } catch {
-    return 'Fecha no valida';
+    return 'Fecha no válida';
   }
 }
 
-/** Build the summary text for the collapsed state */
 function summaryText(overallFreshness: string, lastEtlRun: string | null): string {
   const label = freshnessLabel(overallFreshness);
   if (lastEtlRun) {
@@ -66,17 +55,15 @@ function summaryText(overallFreshness: string, lastEtlRun: string | null): strin
     );
     if (daysAgo === 0) return `${label} — datos actualizados hoy`;
     if (daysAgo === 1) return `${label} — datos actualizados ayer`;
-    return `${label} — datos actualizados hace ${daysAgo} dias`;
+    return `${label} — datos actualizados hace ${daysAgo} días`;
   }
   return `Estado de datos: ${label}`;
 }
 
 function PipelineRow({ pipeline }: { pipeline: PipelineFreshness }) {
   const displayName = PIPELINE_LABELS[pipeline.pipeline] || pipeline.pipeline;
-
   return (
     <div className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-x-4 gap-y-1 py-1.5 text-sm">
-      {/* Name + status dot */}
       <div className="flex items-center gap-2 min-w-0">
         <span
           className={`inline-block h-2 w-2 flex-shrink-0 rounded-full ${freshnessColor(pipeline.freshness)}`}
@@ -84,20 +71,14 @@ function PipelineRow({ pipeline }: { pipeline: PipelineFreshness }) {
         />
         <span className="text-slate-200 truncate">{displayName}</span>
       </div>
-
-      {/* Last updated */}
       <span className="text-slate-400 text-xs whitespace-nowrap">
         {formatDate(pipeline.last_success)}
       </span>
-
-      {/* Records */}
       <span className="text-slate-500 text-xs whitespace-nowrap">
         {pipeline.records_processed > 0
           ? `${pipeline.records_processed.toLocaleString('es-ES')} reg.`
           : '—'}
       </span>
-
-      {/* Freshness badge */}
       <span
         className={`text-xs px-2 py-0.5 rounded-full ${
           pipeline.freshness === 'fresh'
@@ -119,10 +100,8 @@ export function DataFreshness() {
   const { data, loading, error } = useFetch(getFreshness);
   const [expanded, setExpanded] = useState(false);
 
-  // Non-critical component: hide entirely on error
   if (error) return null;
 
-  // Loading skeleton
   if (loading) {
     return (
       <div className="border-t border-brand-border">
@@ -138,7 +117,6 @@ export function DataFreshness() {
   return (
     <div className="border-t border-brand-border bg-brand-surface/50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        {/* Collapsed bar */}
         <button
           onClick={() => setExpanded((prev) => !prev)}
           className="flex w-full items-center justify-between py-3 text-left
@@ -169,14 +147,13 @@ export function DataFreshness() {
           </svg>
         </button>
 
-        {/* Expanded details */}
         {expanded && (
           <div
             id="freshness-details"
             className="pb-4 pt-1 border-t border-brand-border/50"
           >
             <p className="text-xs text-slate-500 mb-3 uppercase tracking-wider font-mono">
-              Estado por fuente de datos
+              Origen y estado de cada fuente de datos
             </p>
             <div className="divide-y divide-brand-border/30">
               {data.pipelines.map((pipeline) => (

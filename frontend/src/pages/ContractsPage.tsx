@@ -402,6 +402,7 @@ export function ContractsPage() {
                       />
                       <Tooltip
                         {...DARK_TOOLTIP}
+                        cursor={{ fill: 'rgba(22, 199, 154, 0.08)' }}
                         formatter={(value: number) => [fmtEur(value), 'Importe adjudicado']}
                         labelFormatter={(label: string) => {
                           const item = top15Companies.find((c) => c.name === label);
@@ -628,6 +629,7 @@ export function ContractsPage() {
                         </Pie>
                         <Tooltip
                           {...DARK_TOOLTIP}
+                          cursor={{ fill: 'rgba(22, 199, 154, 0.08)' }}
                           formatter={(value: number) => [fmtEs(value) + ' contratos', '']}
                         />
                       </PieChart>
@@ -699,6 +701,7 @@ export function ContractsPage() {
                       />
                       <Tooltip
                         {...DARK_TOOLTIP}
+                        cursor={{ fill: 'rgba(22, 199, 154, 0.08)' }}
                         formatter={(value: number, name: string) => {
                           if (name === 'amount') return [fmtEur(value), 'Importe adjudicado'];
                           return [fmtEs(value), 'Contratos'];
@@ -781,6 +784,7 @@ export function ContractsPage() {
                         </Pie>
                         <Tooltip
                           {...DARK_TOOLTIP}
+                          cursor={{ fill: 'rgba(22, 199, 154, 0.08)' }}
                           formatter={(value: number) => [fmtEs(value) + ' contratos', '']}
                         />
                       </PieChart>
@@ -921,14 +925,26 @@ export function ContractsPage() {
                             <div className="flex items-center gap-2 flex-shrink-0 ml-3">
                               {/* Badges */}
                               {hasCnmc && (
-                                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-yellow/10 text-yellow border border-yellow/20">
-                                  CNMC
-                                </span>
+                                <a
+                                  href={company.cnmc_sanction_url || '#'}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-yellow/10 text-yellow border border-yellow/20 hover:bg-yellow/20 transition-colors"
+                                >
+                                  CNMC ↗
+                                </a>
                               )}
                               {hasJudicial && (
-                                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red/10 text-red border border-red/20">
-                                  Judicial
-                                </span>
+                                <a
+                                  href={company.judicial_cases_url || '#'}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-red/10 text-red border border-red/20 hover:bg-red/20 transition-colors"
+                                >
+                                  Judicial ↗
+                                </a>
                               )}
                               {hasConnections && (
                                 <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-brand-blue/10 text-brand-blue border border-brand-blue/20">
@@ -1015,6 +1031,16 @@ export function ContractsPage() {
                                     <p className="text-sm text-slate-300 leading-relaxed">
                                       {company.cnmc_sanction}
                                     </p>
+                                    {company.cnmc_sanction_url && (
+                                      <a
+                                        href={company.cnmc_sanction_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 mt-2 text-xs text-yellow hover:text-yellow/80 transition-colors"
+                                      >
+                                        Ver resolución CNMC ↗
+                                      </a>
+                                    )}
                                   </div>
                                 </div>
                               )}
@@ -1030,6 +1056,16 @@ export function ContractsPage() {
                                     <p className="text-sm text-slate-300 leading-relaxed">
                                       {company.judicial_cases}
                                     </p>
+                                    {company.judicial_cases_url && (
+                                      <a
+                                        href={company.judicial_cases_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 mt-2 text-xs text-red hover:text-red/80 transition-colors"
+                                      >
+                                        Ver fuente ↗
+                                      </a>
+                                    )}
                                   </div>
                                 </div>
                               )}
