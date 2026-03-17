@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { getContracts, getRankings } from '@/lib/api';
 import { useFetch } from '@/hooks/useFetch';
 import { ContractFiltersBar } from './ContractFilters';
@@ -70,6 +71,16 @@ export function Contracts() {
             Todos los contratos de infraestructuras viarias de Tenerife. Filtra, busca
             y descubre a dónde va el dinero de todos.
           </p>
+          <Link
+            to="/contratos"
+            className="inline-flex items-center gap-2 mt-4 text-brand-blue font-medium text-sm
+                       hover:text-brand-blue/80 transition-colors group"
+          >
+            Estudio completo de transparencia
+            <span className="inline-block transition-transform group-hover:translate-x-1">
+              &rarr;
+            </span>
+          </Link>
         </div>
 
         {/* Summary KPI cards */}

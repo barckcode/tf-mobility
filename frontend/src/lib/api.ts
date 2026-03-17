@@ -19,6 +19,7 @@ import type {
   TramStopsResponse,
   TransitStudy,
   ContractTransparency,
+  DirectorsTransparency,
 } from '@/types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -122,4 +123,8 @@ export async function getTransitStudy(): Promise<TransitStudy> {
 
 export async function getContractsTransparency(): Promise<ContractTransparency> {
   return fetchJSON<ContractTransparency>(`${API_BASE}/contracts/transparency`);
+}
+
+export async function getDirectorsTransparency(): Promise<DirectorsTransparency> {
+  return fetchJSON<DirectorsTransparency>(`${API_BASE}/contracts/directors`);
 }

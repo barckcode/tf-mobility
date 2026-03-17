@@ -63,3 +63,35 @@ class ContractsTransparencyResponse(BaseModel):
     concentration_top10_pct: float  # % going to top 10
     savings_avg_pct: float  # average (licitacion - adjudicacion) / licitacion
     disclaimer: str
+
+
+class DirectorInfo(BaseModel):
+    name: str
+    role: str
+    source: str
+
+
+class PublicConnection(BaseModel):
+    description: str
+    source_name: str
+    source_url: str
+
+
+class CompanyDirectorsResponse(BaseModel):
+    company: str
+    cif: str | None = None
+    total_contracts: int
+    total_amount: float
+    directors: list[DirectorInfo]
+    public_connections: list[PublicConnection]
+    cnmc_sanction: str | None = None  # CNMC cartel sanction if applicable
+    judicial_cases: str | None = None  # Public judicial cases if applicable
+    confidence_level: str  # alto, medio, bajo
+
+
+class DirectorsTransparencyResponse(BaseModel):
+    companies: list[CompanyDirectorsResponse]
+    methodology: str
+    disclaimer: str
+    last_updated: str
+    sources_count: int

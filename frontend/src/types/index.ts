@@ -307,6 +307,39 @@ export interface TransparencyCompanyRanking {
   avg_competitors: number | null;
 }
 
+// S8b — Directors & Public Connections
+export interface DirectorInfo {
+  name: string;
+  role: string;
+  source: string;
+}
+
+export interface PublicConnection {
+  description: string;
+  source_name: string;
+  source_url: string;
+}
+
+export interface CompanyDirectors {
+  company: string;
+  cif: string | null;
+  total_contracts: number;
+  total_amount: number;
+  directors: DirectorInfo[];
+  public_connections: PublicConnection[];
+  cnmc_sanction: string | null;
+  judicial_cases: string | null;
+  confidence_level: string;
+}
+
+export interface DirectorsTransparency {
+  companies: CompanyDirectors[];
+  methodology: string;
+  disclaimer: string;
+  last_updated: string;
+  sources_count: number;
+}
+
 // Metadata — Data freshness
 export interface PipelineFreshness {
   pipeline: string;

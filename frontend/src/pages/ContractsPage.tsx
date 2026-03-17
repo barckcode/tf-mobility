@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -19,7 +19,8 @@ import { CardSkeleton } from '@/components/ui/Skeleton';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { useIntersection } from '@/hooks/useIntersection';
 import { useFetch } from '@/hooks/useFetch';
-import { getContractsTransparency } from '@/lib/api';
+import { getContractsTransparency, getDirectorsTransparency } from '@/lib/api';
+import type { CompanyDirectors } from '@/types';
 
 /* ── Constants ────────────────────────────────────────────────── */
 
@@ -81,6 +82,10 @@ export function ContractsPage() {
 
   /* Data fetching */
   const { data, loading, error, refetch } = useFetch(getContractsTransparency);
+  const { data: directorsData } = useFetch(getDirectorsTransparency);
+
+  /* Directors accordion state */
+  const [expandedCompany, setExpandedCompany] = useState<string | null>(null);
 
   /* Intersection observers for scroll animations */
   const [heroRef, heroVisible] = useIntersection(0.1);
@@ -91,6 +96,8 @@ export function ContractsPage() {
   const [competitionRef, competitionVisible] = useIntersection(0.1);
   const [evolutionRef, evolutionVisible] = useIntersection(0.1);
   const [typesRef, typesVisible] = useIntersection(0.1);
+  const [directorsRef, directorsVisible] = useIntersection(0.1);
+  const [contextRef, contextVisible] = useIntersection(0.1);
   const [footerDisclaimerRef, footerDisclaimerVisible] = useIntersection(0.1);
 
   /* ── Derived data ───────────────────────────────────────────── */
@@ -170,7 +177,7 @@ export function ContractsPage() {
         <section
           ref={heroRef}
           className="relative pt-28 pb-16"
-          aria-label="Contratos de Movilidad - Introduccion"
+          aria-label="Contratos de Movilidad - Introducción"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-brand-bg via-brand-bg to-brand-surface pointer-events-none" />
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 h-[500px] w-[500px] rounded-full
@@ -187,12 +194,12 @@ export function ContractsPage() {
               Contratos de <span className="text-brand-blue">Movilidad</span>
             </h1>
             <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-2">
-              Transparencia en la contratacion publica
+              Transparencia en la contratación pública
             </p>
             <p className="text-slate-400 max-w-3xl mx-auto leading-relaxed">
-              Analisis de los contratos publicos de movilidad del Cabildo de Tenerife.
-              Todos los datos proceden de la Plataforma de Contratacion del Sector Publico (PLACSP)
-              y son de acceso publico.
+              Análisis de los contratos públicos de movilidad del Cabildo de Tenerife.
+              Todos los datos proceden de la Plataforma de Contratación del Sector Público (PLACSP)
+              y son de acceso público.
             </p>
           </div>
         </section>
@@ -256,7 +263,7 @@ export function ContractsPage() {
             <section
               ref={kpiRef}
               className="relative py-12"
-              aria-label="Indicadores clave de contratacion"
+              aria-label="Indicadores clave de contratación"
             >
               <div className="absolute inset-0 bg-gradient-to-b from-brand-bg to-brand-surface pointer-events-none" />
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
@@ -309,7 +316,7 @@ export function ContractsPage() {
                       : 'border-brand-border'
                   }`}>
                     <p className="text-xs text-slate-400 uppercase tracking-wider mb-2 font-medium">
-                      Licitador unico
+                      Licitador único
                     </p>
                     <p className={`text-3xl font-bold font-mono ${
                       data.contracts_single_bidder_pct > 15 ? 'text-yellow' : 'text-white'
@@ -330,7 +337,7 @@ export function ContractsPage() {
                       {fmtPct(data.savings_avg_pct)}
                     </p>
                     <p className="text-xs text-slate-500 mt-1">
-                      licitacion vs adjudicacion
+                      licitación vs adjudicación
                     </p>
                   </div>
                 </div>
@@ -357,8 +364,8 @@ export function ContractsPage() {
                     Top 15 <span className="text-brand-blue">empresas</span>
                   </h2>
                   <p className="text-slate-400 max-w-2xl">
-                    Empresas con mayor volumen de adjudicacion en contratos de movilidad.
-                    Datos publicos de la PLACSP.
+                    Empresas con mayor volumen de adjudicación en contratos de movilidad.
+                    Datos públicos de la PLACSP.
                   </p>
                 </div>
 
@@ -373,7 +380,11 @@ export function ContractsPage() {
                       layout="vertical"
                       margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={false} />
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="rgba(51,65,85,0.5)"
+                        horizontal={false}
+                      />
                       <XAxis
                         type="number"
                         tickFormatter={fmtEurShort}
@@ -421,7 +432,7 @@ export function ContractsPage() {
             <section
               ref={concentrationRef}
               className="relative py-12"
-              aria-label="Concentracion de mercado"
+              aria-label="Concentración de mercado"
             >
               <div className="absolute inset-0 bg-gradient-to-b from-brand-bg to-brand-surface pointer-events-none" />
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
@@ -429,13 +440,13 @@ export function ContractsPage() {
               <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
                 <div className="mb-8">
                   <p className="text-brand-blue font-mono text-sm tracking-widest uppercase mb-3">
-                    Concentracion
+                    Concentración
                   </p>
                   <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
-                    Concentracion de <span className="text-brand-blue">mercado</span>
+                    Concentración de <span className="text-brand-blue">mercado</span>
                   </h2>
                   <p className="text-slate-400 max-w-2xl">
-                    Que porcentaje del gasto publico se concentra en las principales empresas adjudicatarias.
+                    Qué porcentaje del gasto público se concentra en las principales empresas adjudicatarias.
                   </p>
                 </div>
 
@@ -473,7 +484,7 @@ export function ContractsPage() {
                   {/* Concentration bar visualization */}
                   <div className="rounded-2xl bg-brand-card border border-brand-border p-6">
                     <p className="text-sm text-slate-300 font-medium mb-4">
-                      Distribucion del gasto
+                      Distribución del gasto
                     </p>
 
                     {/* Stacked bar */}
@@ -511,9 +522,9 @@ export function ContractsPage() {
                     </div>
 
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      La concentracion de mercado en la contratacion publica es un indicador de la
-                      estructura del sector. Un nivel elevado puede reflejar especializacion
-                      tecnica o barreras de entrada, mientras que una mayor distribucion suele
+                      La concentración de mercado en la contratación pública es un indicador de la
+                      estructura del sector. Un nivel elevado puede reflejar especialización
+                      técnica o barreras de entrada, mientras que una mayor distribución suele
                       indicar mayor competitividad.
                     </p>
                   </div>
@@ -527,7 +538,7 @@ export function ContractsPage() {
             <section
               ref={competitionRef}
               className="relative py-12"
-              aria-label="Analisis de competencia"
+              aria-label="Análisis de competencia"
             >
               <div className="absolute inset-0 bg-gradient-to-b from-brand-surface to-brand-bg pointer-events-none" />
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
@@ -538,11 +549,11 @@ export function ContractsPage() {
                     Competencia
                   </p>
                   <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
-                    Analisis de <span className="text-brand-blue">competencia</span>
+                    Análisis de <span className="text-brand-blue">competencia</span>
                   </h2>
                   <p className="text-slate-400 max-w-2xl">
-                    La competencia en las licitaciones es un indicador clave de la calidad del
-                    proceso de contratacion publica.
+                    La competencia en las licitaciónes es un indicador clave de la calidad del
+                    proceso de contratación pública.
                   </p>
                 </div>
 
@@ -559,7 +570,7 @@ export function ContractsPage() {
                         : 'bg-brand-card border-brand-border'
                     }`}>
                       <p className="text-xs text-slate-400 uppercase tracking-wider mb-3 font-medium">
-                        Contratos con licitador unico
+                        Contratos con licitador único
                       </p>
                       <p className={`text-6xl sm:text-7xl font-bold font-mono mb-2 ${
                         data.contracts_single_bidder_pct > 15 ? 'text-yellow' : 'text-white'
@@ -579,16 +590,16 @@ export function ContractsPage() {
                         {data.avg_competitors_per_contract.toFixed(1).replace('.', ',')}
                       </p>
                       <p className="text-xs text-slate-500 mt-1">
-                        empresas presentadas por licitacion
+                        empresas presentadas por licitación
                       </p>
                     </div>
 
                     <div className="rounded-xl bg-brand-card border border-brand-border p-5">
                       <p className="text-xs text-slate-400 leading-relaxed">
-                        Las licitaciones con un unico participante no implican necesariamente
-                        irregularidades. Pueden deberse a la especializacion tecnica requerida,
+                        Las licitaciónes con un único participante no implican necesariamente
+                        irregularidades. Pueden deberse a la especialización técnica requerida,
                         plazos ajustados o requisitos de solvencia elevados. No obstante, una
-                        mayor concurrencia genera mejores precios para la administracion.
+                        mayor concurrencia genera mejores precios para la administración.
                       </p>
                     </div>
                   </div>
@@ -596,7 +607,7 @@ export function ContractsPage() {
                   {/* Donut chart */}
                   <div className="rounded-2xl bg-brand-card border border-brand-border p-4 sm:p-6 flex flex-col items-center justify-center">
                     <p className="text-sm text-slate-300 font-medium mb-4">
-                      Distribucion por numero de licitadores
+                      Distribución por número de licitadores
                     </p>
                     <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
@@ -632,7 +643,7 @@ export function ContractsPage() {
             <section
               ref={evolutionRef}
               className="relative py-12"
-              aria-label="Evolucion del gasto"
+              aria-label="Evolución del gasto"
             >
               <div className="absolute inset-0 bg-gradient-to-b from-brand-bg to-brand-surface pointer-events-none" />
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
@@ -640,13 +651,13 @@ export function ContractsPage() {
               <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
                 <div className="mb-8">
                   <p className="text-brand-blue font-mono text-sm tracking-widest uppercase mb-3">
-                    Evolucion temporal
+                    Evolución temporal
                   </p>
                   <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
-                    Gasto por <span className="text-brand-blue">ano</span>
+                    Gasto por <span className="text-brand-blue">año</span>
                   </h2>
                   <p className="text-slate-400 max-w-2xl">
-                    Evolucion del numero de contratos y volumen de adjudicacion a lo largo del tiempo.
+                    Evolución del número de contratos y volumen de adjudicación a lo largo del tiempo.
                   </p>
                 </div>
 
@@ -660,7 +671,11 @@ export function ContractsPage() {
                       data={yearData}
                       margin={{ top: 20, right: 30, left: 10, bottom: 10 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="rgba(51,65,85,0.5)"
+                        horizontal={false}
+                      />
                       <XAxis
                         dataKey="year"
                         tick={{ fill: '#94a3b8', fontSize: 12 }}
@@ -688,10 +703,10 @@ export function ContractsPage() {
                           if (name === 'amount') return [fmtEur(value), 'Importe adjudicado'];
                           return [fmtEs(value), 'Contratos'];
                         }}
-                        labelFormatter={(label) => `Ano ${label}`}
+                        labelFormatter={(label) => `Año ${label}`}
                       />
                       <Legend
-                        formatter={(value) => (value === 'amount' ? 'Importe adjudicado' : 'Num. contratos')}
+                        formatter={(value) => (value === 'amount' ? 'Importe adjudicado' : 'Núm. contratos')}
                         wrapperStyle={{ color: '#94a3b8', fontSize: '12px' }}
                       />
                       <Bar
@@ -730,13 +745,13 @@ export function ContractsPage() {
               <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
                 <div className="mb-8">
                   <p className="text-brand-blue font-mono text-sm tracking-widest uppercase mb-3">
-                    Tipologia
+                    Tipología
                   </p>
                   <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
                     Tipos de <span className="text-brand-blue">contrato</span>
                   </h2>
                   <p className="text-slate-400 max-w-2xl">
-                    Distribucion de los contratos segun su naturaleza: obras, servicios, suministros y otros.
+                    Distribución de los contratos según su naturaleza: obras, servicios, suministros y otros.
                   </p>
                 </div>
 
@@ -814,12 +829,299 @@ export function ContractsPage() {
             </section>
 
             {/* ══════════════════════════════════════════════════════════
-                Section 9: Footer Disclaimer
+                Section 9: Company Directors & Public Connections
+                ══════════════════════════════════════════════════════════ */}
+            {directorsData && directorsData.companies.length > 0 && (
+              <section
+                ref={directorsRef}
+                className="relative py-12"
+                aria-label="Directivos y conexiones públicas"
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-brand-bg to-brand-surface pointer-events-none" />
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
+
+                <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
+                  <div className="mb-8">
+                    <p className="text-brand-blue font-mono text-sm tracking-widest uppercase mb-3">
+                      Transparencia empresarial
+                    </p>
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
+                      Directivos y <span className="text-brand-blue">conexiones públicas</span>
+                    </h2>
+                    <p className="text-slate-400 max-w-3xl">
+                      Información pública sobre los directivos de las principales empresas adjudicatarias
+                      y sus conexiones documentadas con el ámbito público. Fuentes: BORME, CNMC, y prensa.
+                    </p>
+                  </div>
+
+                  {/* Directors disclaimer */}
+                  <div className="mb-6 rounded-xl bg-gradient-to-r from-brand-blue/10 via-brand-card to-brand-blue/10
+                                  border border-brand-blue/20 p-5">
+                    <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-brand-blue flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                      </svg>
+                      <p className="text-sm text-slate-300 leading-relaxed">
+                        {directorsData.disclaimer}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`space-y-3 transition-all duration-700
+                                ${directorsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+                  >
+                    {directorsData.companies.map((company: CompanyDirectors) => {
+                      const isOpen = expandedCompany === company.company;
+                      const hasConnections = company.public_connections.length > 0;
+                      const hasCnmc = !!company.cnmc_sanction;
+                      const hasJudicial = !!company.judicial_cases;
+
+                      return (
+                        <div
+                          key={company.company}
+                          className="rounded-xl bg-brand-card border border-brand-border overflow-hidden"
+                        >
+                          <button
+                            onClick={() => setExpandedCompany(isOpen ? null : company.company)}
+                            className="w-full flex items-center justify-between p-5 text-left
+                                       hover:bg-brand-surface/50 transition-colors"
+                            aria-expanded={isOpen}
+                          >
+                            <div className="flex items-center gap-4 min-w-0 flex-1">
+                              <span
+                                className={`inline-block w-2 h-10 rounded-full flex-shrink-0 ${
+                                  company.confidence_level === 'alto'
+                                    ? 'bg-green'
+                                    : company.confidence_level === 'medio'
+                                      ? 'bg-yellow'
+                                      : 'bg-red'
+                                }`}
+                              />
+                              <div className="min-w-0">
+                                <span className="font-semibold text-white text-sm sm:text-base block truncate">
+                                  {company.company}
+                                </span>
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                                  {company.cif && (
+                                    <span className="text-xs text-slate-500 font-mono">
+                                      CIF: {company.cif}
+                                    </span>
+                                  )}
+                                  <span className="text-xs text-slate-400">
+                                    {company.total_contracts} contrato{company.total_contracts !== 1 ? 's' : ''}
+                                  </span>
+                                  <span className="text-xs text-brand-blue font-mono font-medium">
+                                    {fmtEur(company.total_amount)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+                              {/* Badges */}
+                              {hasCnmc && (
+                                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-yellow/10 text-yellow border border-yellow/20">
+                                  CNMC
+                                </span>
+                              )}
+                              {hasJudicial && (
+                                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red/10 text-red border border-red/20">
+                                  Judicial
+                                </span>
+                              )}
+                              {hasConnections && (
+                                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-brand-blue/10 text-brand-blue border border-brand-blue/20">
+                                  {company.public_connections.length} conexi{company.public_connections.length !== 1 ? 'ones' : 'ón'}
+                                </span>
+                              )}
+
+                              {/* Chevron */}
+                              <svg
+                                className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${
+                                  isOpen ? 'rotate-180' : ''
+                                }`}
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
+                            </div>
+                          </button>
+
+                          {/* Expanded content */}
+                          {isOpen && (
+                            <div className="border-t border-brand-border p-5 space-y-5">
+                              {/* Directors */}
+                              <div>
+                                <h4 className="text-xs text-slate-400 uppercase tracking-wider font-medium mb-3">
+                                  Directivos
+                                </h4>
+                                <div className="space-y-2">
+                                  {company.directors.map((d, i) => (
+                                    <div key={i} className="flex items-start gap-3 text-sm">
+                                      <svg className="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                      </svg>
+                                      <div>
+                                        <span className="text-white font-medium">{d.name}</span>
+                                        <span className="text-slate-400 ml-2">{d.role}</span>
+                                        <span className="text-slate-600 text-xs ml-2">({d.source})</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Public connections */}
+                              {company.public_connections.length > 0 && (
+                                <div>
+                                  <h4 className="text-xs text-slate-400 uppercase tracking-wider font-medium mb-3">
+                                    Conexiones públicas documentadas
+                                  </h4>
+                                  <div className="space-y-3">
+                                    {company.public_connections.map((conn, i) => (
+                                      <div key={i} className="rounded-lg bg-brand-surface/50 border border-brand-border p-4">
+                                        <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                                          {conn.description}
+                                        </p>
+                                        <a
+                                          href={conn.source_url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="inline-flex items-center gap-1.5 text-xs text-brand-blue hover:text-brand-blue/80 transition-colors"
+                                        >
+                                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                          </svg>
+                                          {conn.source_name}
+                                        </a>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* CNMC sanction */}
+                              {company.cnmc_sanction && (
+                                <div>
+                                  <h4 className="text-xs text-slate-400 uppercase tracking-wider font-medium mb-3 flex items-center gap-2">
+                                    <span className="inline-block w-2 h-2 rounded-full bg-yellow" />
+                                    Sanción CNMC
+                                  </h4>
+                                  <div className="rounded-lg bg-yellow/5 border border-yellow/15 p-4">
+                                    <p className="text-sm text-slate-300 leading-relaxed">
+                                      {company.cnmc_sanction}
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Judicial cases */}
+                              {company.judicial_cases && (
+                                <div>
+                                  <h4 className="text-xs text-slate-400 uppercase tracking-wider font-medium mb-3 flex items-center gap-2">
+                                    <span className="inline-block w-2 h-2 rounded-full bg-red" />
+                                    Casos judiciales públicos
+                                  </h4>
+                                  <div className="rounded-lg bg-red/5 border border-red/15 p-4">
+                                    <p className="text-sm text-slate-300 leading-relaxed">
+                                      {company.judicial_cases}
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Confidence level */}
+                              <div className="flex items-center gap-2 pt-2 border-t border-brand-border">
+                                <span className="text-xs text-slate-500">Nivel de confianza:</span>
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                                  company.confidence_level === 'alto'
+                                    ? 'bg-green/10 text-green border border-green/20'
+                                    : company.confidence_level === 'medio'
+                                      ? 'bg-yellow/10 text-yellow border border-yellow/20'
+                                      : 'bg-red/10 text-red border border-red/20'
+                                }`}>
+                                  {company.confidence_level}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Methodology */}
+                  <div className="mt-6 rounded-xl bg-brand-card border border-brand-border p-5">
+                    <div className="flex items-start gap-3">
+                      <svg className="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                      </svg>
+                      <div className="space-y-2">
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          <span className="font-medium text-slate-300">Metodología:</span>{' '}
+                          {directorsData.methodology}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          Última actualización: {directorsData.last_updated} · {directorsData.sources_count} fuentes consultadas
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════
+                Section 9b: Contextual Note — CNMC Cartel
+                ══════════════════════════════════════════════════════════ */}
+            {directorsData && directorsData.companies.length > 0 && (
+              <section
+                ref={contextRef}
+                className="relative py-8"
+                aria-label="Dato contextual"
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-brand-surface to-brand-bg pointer-events-none" />
+
+                <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
+                  <div
+                    className={`rounded-2xl bg-gradient-to-r from-yellow/5 via-brand-card to-yellow/5
+                                border border-yellow/15 p-6 sm:p-8
+                                transition-all duration-700
+                                ${contextVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 mt-1">
+                        <svg className="w-6 h-6 text-yellow" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-yellow uppercase tracking-wider mb-2">
+                          Dato contextual
+                        </h3>
+                        <p className="text-slate-300 text-sm leading-relaxed">
+                          Las 6 grandes constructoras españolas (ACS/Dragados, Sacyr, OHL/OHLA, FCC, Ferrovial, Acciona)
+                          fueron sancionadas por la CNMC en 2022 por operar como un cártel durante 25 años (1992-2017).
+                          Tres de esas seis empresas aparecen entre los principales adjudicatarios del Cabildo de Tenerife.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════
+                Section 10: Footer Disclaimer
                 ══════════════════════════════════════════════════════════ */}
             <section
               ref={footerDisclaimerRef}
               className="relative py-12"
-              aria-label="Fuentes y metodologia"
+              aria-label="Fuentes y metodología"
             >
               <div className="absolute inset-0 bg-gradient-to-b from-brand-bg to-brand-surface pointer-events-none" />
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
@@ -843,16 +1145,16 @@ export function ContractsPage() {
                       <div className="space-y-2 text-xs text-slate-500">
                         <p>
                           <span className="font-medium text-slate-400">Fuente:</span>{' '}
-                          Plataforma de Contratacion del Sector Publico (PLACSP)
+                          Plataforma de Contratación del Sector Público (PLACSP)
                         </p>
                         <p>
-                          <span className="font-medium text-slate-400">Actualizacion:</span>{' '}
-                          Datos actualizados automaticamente cada 30 dias
+                          <span className="font-medium text-slate-400">Actualización:</span>{' '}
+                          Datos actualizados automáticamente cada 30 días
                         </p>
                         <p>
-                          <span className="font-medium text-slate-400">Metodologia:</span>{' '}
-                          Los importes corresponden a los valores de adjudicacion publicados oficialmente.
-                          La clasificacion por tipo de contrato sigue la taxonomia oficial de la PLACSP.
+                          <span className="font-medium text-slate-400">Metodología:</span>{' '}
+                          Los importes corresponden a los valores de adjudicación publicados oficialmente.
+                          La clasificación por tipo de contrato sigue la taxonomía oficial de la PLACSP.
                         </p>
                       </div>
                     </div>
