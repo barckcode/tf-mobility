@@ -283,6 +283,30 @@ export interface TransitStudy {
   alternatives_verdict: string;
 }
 
+// S8 — Contracts Transparency
+export interface ContractTransparency {
+  total_contracts: number;
+  total_awarded_amount: number;
+  avg_competitors_per_contract: number;
+  contracts_single_bidder: number;
+  contracts_single_bidder_pct: number;
+  top_companies: TransparencyCompanyRanking[];
+  contracts_by_year: { year: number; count: number; amount: number }[];
+  contracts_by_type: { type: string; count: number }[];
+  concentration_top5_pct: number;
+  concentration_top10_pct: number;
+  savings_avg_pct: number;
+  disclaimer: string;
+}
+
+export interface TransparencyCompanyRanking {
+  company: string;
+  cif: string | null;
+  total_amount: number;
+  contract_count: number;
+  avg_competitors: number | null;
+}
+
 // Metadata — Data freshness
 export interface PipelineFreshness {
   pipeline: string;

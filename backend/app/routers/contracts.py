@@ -13,6 +13,7 @@ from app.schemas.contracts import (
     CompanyRanking,
     RankingsResponse,
     ContractsSummaryResponse,
+    ContractsTransparencyResponse,
 )
 
 router = APIRouter(tags=["contracts"])
@@ -27,6 +28,8 @@ def _contract_to_response(c: Contrato) -> ContractResponse:
         importe_licitacion=c.importe_licitacion or 0.0,
         importe_adjudicacion=c.importe_adjudicacion or 0.0,
         adjudicatario=c.adjudicatario or "",
+        cif_adjudicatario=getattr(c, 'cif_adjudicatario', None),
+        num_ofertas=getattr(c, 'num_ofertas', None),
         fecha=str(c.fecha_adjudicacion or c.fecha_publicacion or ""),
         estado=c.estado or "",
         carreteras=[c.carretera] if c.carretera else [],
@@ -188,13 +191,122 @@ def get_rankings(
         .all()
     )
 
-    return RankingsResponse(
-        top_companies=[
-            CompanyRanking(
-                company=e.nombre,
-                total_amount=e.importe_total or 0.0,
-                contract_count=e.num_contratos or 0,
-            )
-            for e in companies
+    rankings = []
+    for e in companies:
+        # Compute average competitors for this company
+        avg_comp = (
+            db.query(func.avg(Contrato.num_ofertas))
+            .filter(Contrato.adjudicatario == e.nombre)
+            .filter(Contrato.num_ofertas.isnot(None))
+            .scalar()
+        )
+        rankings.append(CompanyRanking(
+            company=e.nombre,
+            cif=e.cif,
+            total_amount=e.importe_total or 0.0,
+            contract_count=e.num_contratos or 0,
+            avg_competitors=round(float(avg_comp), 1) if avg_comp else None,
+        ))
+
+    return RankingsResponse(top_companies=rankings)
+
+
+@router.get("/contracts/transparency", response_model=ContractsTransparencyResponse)
+def get_transparency(db: Session = Depends(get_db)):
+    """Comprehensive transparency analysis of mobility contracts."""
+    total = db.query(Contrato).count()
+    total_awarded = db.query(func.sum(Contrato.importe_adjudicacion)).scalar() or 0.0
+
+    # Competition metrics
+    avg_competitors = db.query(func.avg(Contrato.num_ofertas)).filter(
+        Contrato.num_ofertas.isnot(None)
+    ).scalar() or 0.0
+
+    single_bidder = db.query(Contrato).filter(Contrato.num_ofertas == 1).count()
+    single_bidder_pct = (single_bidder / total * 100) if total > 0 else 0.0
+
+    # Top companies
+    companies = (
+        db.query(Empresa)
+        .filter(Empresa.importe_total > 0)
+        .order_by(Empresa.importe_total.desc())
+        .limit(15)
+        .all()
+    )
+
+    top_companies = []
+    for e in companies:
+        avg_comp = (
+            db.query(func.avg(Contrato.num_ofertas))
+            .filter(Contrato.adjudicatario == e.nombre)
+            .filter(Contrato.num_ofertas.isnot(None))
+            .scalar()
+        )
+        top_companies.append(CompanyRanking(
+            company=e.nombre,
+            cif=e.cif,
+            total_amount=e.importe_total or 0.0,
+            contract_count=e.num_contratos or 0,
+            avg_competitors=round(float(avg_comp), 1) if avg_comp else None,
+        ))
+
+    # Concentration
+    top5_amount = sum(c.total_amount for c in top_companies[:5])
+    top10_amount = sum(c.total_amount for c in top_companies[:10])
+    concentration_top5 = (top5_amount / total_awarded * 100) if total_awarded > 0 else 0.0
+    concentration_top10 = (top10_amount / total_awarded * 100) if total_awarded > 0 else 0.0
+
+    # Savings (licitacion vs adjudicacion)
+    savings_rows = (
+        db.query(Contrato.importe_licitacion, Contrato.importe_adjudicacion)
+        .filter(Contrato.importe_licitacion.isnot(None))
+        .filter(Contrato.importe_adjudicacion.isnot(None))
+        .filter(Contrato.importe_licitacion > 0)
+        .all()
+    )
+    if savings_rows:
+        savings_pcts = [
+            (r[0] - r[1]) / r[0] * 100 for r in savings_rows if r[0] > 0
         ]
+        savings_avg = sum(savings_pcts) / len(savings_pcts) if savings_pcts else 0.0
+    else:
+        savings_avg = 0.0
+
+    # By year
+    by_year_rows = (
+        db.query(
+            func.strftime("%Y", Contrato.fecha_adjudicacion).label("year"),
+            func.count(Contrato.id).label("count"),
+            func.sum(Contrato.importe_adjudicacion).label("amount"),
+        )
+        .filter(Contrato.fecha_adjudicacion.isnot(None))
+        .group_by(func.strftime("%Y", Contrato.fecha_adjudicacion))
+        .order_by(func.strftime("%Y", Contrato.fecha_adjudicacion))
+        .all()
+    )
+    by_year = [{"year": int(r.year), "count": r.count, "amount": r.amount or 0.0} for r in by_year_rows if r.year]
+
+    # By type
+    by_type_rows = (
+        db.query(Contrato.tipo, func.count(Contrato.id).label("count"))
+        .filter(Contrato.tipo.isnot(None))
+        .group_by(Contrato.tipo)
+        .order_by(func.count(Contrato.id).desc())
+        .all()
+    )
+    by_type = [{"type": r.tipo, "count": r.count} for r in by_type_rows]
+
+    return ContractsTransparencyResponse(
+        total_contracts=total,
+        total_awarded_amount=total_awarded,
+        avg_competitors_per_contract=round(float(avg_competitors), 1),
+        contracts_single_bidder=single_bidder,
+        contracts_single_bidder_pct=round(single_bidder_pct, 1),
+        top_companies=top_companies,
+        contracts_by_year=by_year,
+        contracts_by_type=by_type,
+        concentration_top5_pct=round(concentration_top5, 1),
+        concentration_top10_pct=round(concentration_top10, 1),
+        savings_avg_pct=round(savings_avg, 1),
+        disclaimer="Esta información es pública y se presenta con fines de transparencia. No se implica irregularidad alguna. Todos los datos proceden de la Plataforma de Contratación del Sector Público (PLACSP).",
     )

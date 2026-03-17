@@ -13,6 +13,8 @@ class Contrato(Base):
     importe_licitacion = Column(Float)
     importe_adjudicacion = Column(Float)
     adjudicatario = Column(String(300))
+    cif_adjudicatario = Column(String(20))  # NIF/CIF of the winning company
+    num_ofertas = Column(Integer)  # Number of bids received
     fecha_publicacion = Column(Date)
     fecha_adjudicacion = Column(Date)
     plazo = Column(String(100))

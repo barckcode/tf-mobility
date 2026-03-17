@@ -9,6 +9,8 @@ class ContractResponse(BaseModel):
     importe_licitacion: float
     importe_adjudicacion: float
     adjudicatario: str
+    cif_adjudicatario: str | None = None
+    num_ofertas: int | None = None
     fecha: str
     estado: str
     carreteras: list[str]
@@ -27,8 +29,10 @@ class ContractsListResponse(BaseModel):
 
 class CompanyRanking(BaseModel):
     company: str
+    cif: str | None = None
     total_amount: float
     contract_count: int
+    avg_competitors: float | None = None  # average num_ofertas across their contracts
 
 
 class RankingsResponse(BaseModel):
@@ -43,3 +47,19 @@ class ContractsSummaryResponse(BaseModel):
     contracts_by_type: list[dict]  # [{type: "obras", count: 200}]
     contracts_by_status: list[dict]  # [{status: "adjudicado", count: 100}]
     top_roads: list[dict]  # [{road: "TF-5", count: 20}]
+
+
+class ContractsTransparencyResponse(BaseModel):
+    """Full transparency analysis of mobility contracts."""
+    total_contracts: int
+    total_awarded_amount: float
+    avg_competitors_per_contract: float
+    contracts_single_bidder: int  # contracts with only 1 offer
+    contracts_single_bidder_pct: float
+    top_companies: list[CompanyRanking]
+    contracts_by_year: list[dict]
+    contracts_by_type: list[dict]
+    concentration_top5_pct: float  # % of total amount going to top 5 companies
+    concentration_top10_pct: float  # % going to top 10
+    savings_avg_pct: float  # average (licitacion - adjudicacion) / licitacion
+    disclaimer: str

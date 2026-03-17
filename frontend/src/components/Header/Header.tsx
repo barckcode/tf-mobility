@@ -9,6 +9,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Inicio', to: '/' },
   { label: 'Transporte Público', to: '/transporte-publico' },
+  { label: 'Contratos', to: '/contratos' },
 ];
 
 export function Header() {

@@ -323,6 +323,20 @@ def _parse_contract_entry(entry) -> Optional[dict]:
         cfs, f"{tr_base}/cac:WinningParty/cac:PartyName/cbc:Name"
     )
 
+    # Winner NIF/CIF
+    cif_adjudicatario = _text(
+        cfs, f"{tr_base}/cac:WinningParty/cac:PartyIdentification/cbc:ID"
+    )
+
+    # Number of tenders/bids received
+    num_ofertas_str = _text(cfs, f"{tr_base}/cbc:ReceivedTenderQuantity")
+    num_ofertas = None
+    if num_ofertas_str:
+        try:
+            num_ofertas = int(num_ofertas_str)
+        except (ValueError, TypeError):
+            pass
+
     # Duration / planned period
     plazo = _text(cfs, f"{pp_base}/cac:PlannedPeriod/cbc:DurationMeasure")
 
@@ -358,6 +372,8 @@ def _parse_contract_entry(entry) -> Optional[dict]:
         "importe_licitacion": importe_licitacion,
         "importe_adjudicacion": importe_adjudicacion,
         "adjudicatario": adjudicatario,
+        "cif_adjudicatario": cif_adjudicatario,
+        "num_ofertas": num_ofertas,
         "fecha_publicacion": fecha_publicacion,
         "fecha_adjudicacion": fecha_adjudicacion,
         "plazo": plazo,
@@ -488,7 +504,7 @@ def _download_and_process_zip(url: str, http_session, force_download: bool = Fal
 
 
 def _build_company_stats(session):
-    """Build/update the empresas table from contracts data."""
+    """Build/update the empresas table from contracts data, including CIF."""
     from sqlalchemy import func
 
     results = (
@@ -506,12 +522,25 @@ def _build_company_stats(session):
 
     for name, num_contracts, total_amount in results:
         existing = session.query(Empresa).filter_by(nombre=name).first()
+
+        # Try to find CIF from any contract with this company
+        cif_row = (
+            session.query(Contrato.cif_adjudicatario)
+            .filter(Contrato.adjudicatario == name)
+            .filter(Contrato.cif_adjudicatario.isnot(None))
+            .first()
+        )
+        cif = cif_row[0] if cif_row else None
+
         if existing:
             existing.num_contratos = num_contracts
             existing.importe_total = total_amount or 0.0
+            if cif and not existing.cif:
+                existing.cif = cif
         else:
             empresa = Empresa(
                 nombre=name,
+                cif=cif,
                 num_contratos=num_contracts,
                 importe_total=total_amount or 0.0,
             )
