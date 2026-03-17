@@ -160,7 +160,7 @@ export function TransitPage() {
     if (!study) return [];
     return [
       { mode: 'Guaguas (TITSA)', passengers: study.bus_annual_passengers, color: '#16C79A' },
-      { mode: 'Tranvia', passengers: study.tram_annual_passengers, color: '#8b5cf6' },
+      { mode: 'Tranvía', passengers: study.tram_annual_passengers, color: '#8b5cf6' },
     ];
   }, [study]);
 
@@ -177,7 +177,7 @@ export function TransitPage() {
         <section
           ref={heroRef}
           className="relative pt-28 pb-16"
-          aria-label="Estudio de Transporte - Introduccion"
+          aria-label="Estudio de Transporte - Introducción"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-brand-bg via-brand-bg to-brand-surface pointer-events-none" />
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 h-[500px] w-[500px] rounded-full
@@ -194,13 +194,13 @@ export function TransitPage() {
               Estudio de <span className="text-green">Transporte</span>
             </h1>
             <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-2">
-              Guaguas, tranvia, taxis y VTC en Tenerife
+              Guaguas, tranvía, taxis y VTC en Tenerife
             </p>
             <p className="text-slate-400 max-w-3xl mx-auto leading-relaxed">
-              Un analisis exhaustivo de todas las alternativas de transporte en la isla.
-              Guaguas TITSA, el tranvia de Santa Cruz-La Laguna, el sector del taxi
-              y los VTC. Los datos revelan que ninguna de estas opciones ofrece una
-              alternativa real al vehiculo privado para la mayoria de la poblacion.
+              Un análisis exhaustivo de todas las alternativas de transporte en la isla.
+              Guaguas TITSA, el tranvía de Santa Cruz-La Laguna, el sector del taxi
+              y los VTC. Los datos revelan que ninguna de estas opciónes ofrece una
+              alternativa real al vehículo privado para la mayoría de la población.
             </p>
             <a
               href="https://agentcrew.sh/"
@@ -247,7 +247,7 @@ export function TransitPage() {
               <section
                 ref={motorRef}
                 className="relative py-12"
-                aria-label="Indice de motorizacion"
+                aria-label="Índice de motorización"
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-brand-surface to-brand-bg pointer-events-none" />
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
@@ -260,17 +260,17 @@ export function TransitPage() {
                                 ${motorVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
                   >
                     <p className="text-red-accent font-mono text-sm tracking-widest uppercase mb-4">
-                      Indice de motorizacion
+                      Índice de motorización
                     </p>
                     <p className="text-6xl sm:text-7xl font-bold font-mono text-white mb-2">
                       {study.motorization_index.toFixed(0).replace('.', ',')}
                     </p>
                     <p className="text-xl text-slate-300 mb-4">
-                      vehiculos por cada 1.000 habitantes
+                      vehículos por cada 1.000 habitantes
                     </p>
                     <p className="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed">
                       Con {fmtEs(study.population)} residentes y {fmtEs(study.annual_tourists)} turistas
-                      anuales, Tenerife tiene uno de los indices de motorizacion mas altos de Europa.
+                      anuales, Tenerife tiene uno de los índices de motorización másaltos de Europa.
                       La dependencia del coche es estructural, no una eleccion.
                     </p>
                     <p className="text-xs text-slate-500 mt-4">
@@ -310,13 +310,13 @@ export function TransitPage() {
                   >
                     <div className="rounded-xl bg-brand-card border border-brand-border p-5">
                       <p className="text-xs text-slate-400 uppercase tracking-wider mb-2 font-medium">
-                        Pasajeros transporte publico / ano
+                        Pasajeros transporte público / año
                       </p>
                       <p className="text-3xl font-bold font-mono text-green">
                         {formatMillions(study.total_public_transport_passengers)}
                       </p>
                       <p className="text-xs text-slate-500 mt-1">
-                        {formatMillions(study.bus_annual_passengers)} bus + {formatMillions(study.tram_annual_passengers)} tranvia
+                        {formatMillions(study.bus_annual_passengers)} bus + {formatMillions(study.tram_annual_passengers)} tranvía
                       </p>
                     </div>
 
@@ -334,7 +334,7 @@ export function TransitPage() {
 
                     <div className="rounded-xl bg-brand-card border border-brand-border p-5">
                       <p className="text-xs text-slate-400 uppercase tracking-wider mb-2 font-medium">
-                        Red de tranvia
+                        Red de tranvía
                       </p>
                       <p className="text-3xl font-bold font-mono text-white">
                         {fmtEs(study.tram_stops)}
@@ -346,13 +346,13 @@ export function TransitPage() {
 
                     <div className="rounded-xl bg-brand-card border border-brand-border p-5">
                       <p className="text-xs text-slate-400 uppercase tracking-wider mb-2 font-medium">
-                        Indice motorizacion
+                        Índice motorización
                       </p>
                       <p className="text-3xl font-bold font-mono text-red-accent">
                         {study.motorization_index.toFixed(0).replace('.', ',')}
                       </p>
                       <p className="text-xs text-slate-500 mt-1">
-                        vehiculos / 1.000 hab.
+                        vehículos / 1.000 hab.
                       </p>
                     </div>
                   </div>
@@ -381,9 +381,9 @@ export function TransitPage() {
                       Red de <span className="text-green">autobus</span>
                     </h2>
                     <p className="text-slate-300 max-w-2xl">
-                      La red de guaguas de TITSA es el principal medio de transporte publico
+                      La red de guaguas de TITSA es el principal medio de transporte público
                       de Tenerife. Pese a su extension, la frecuencia es insuficiente para
-                      la mayoria de paradas.
+                      la mayoría de paradas.
                     </p>
                   </div>
 
@@ -418,7 +418,7 @@ export function TransitPage() {
 
                     <div className="rounded-xl bg-brand-card border border-brand-border p-5">
                       <p className="text-xs text-slate-400 uppercase tracking-wider mb-2 font-medium">
-                        Media buses/dia por parada
+                        Media buses/día por parada
                       </p>
                       <p className="text-3xl font-bold font-mono text-white">
                         {summary.avg_buses_per_day.toFixed(1).replace('.', ',')}
@@ -455,7 +455,7 @@ export function TransitPage() {
               <section
                 ref={chartRef}
                 className="relative py-12"
-                aria-label="Top 10 paradas de guagua mas frecuentadas"
+                aria-label="Top 10 paradas de guagua másfrecuentadas"
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-brand-bg to-brand-surface pointer-events-none" />
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
@@ -467,7 +467,7 @@ export function TransitPage() {
                                 ${chartVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
                   >
                     <h2 className="text-lg font-semibold mb-1">
-                      Top 10 paradas de guagua mas frecuentadas
+                      Top 10 paradas de guagua másfrecuentadas
                     </h2>
                     <p className="text-xs text-slate-400 mb-6">
                       Paradas con mayor numero de guaguas diarias · Fuente: TITSA / Cabildo de Tenerife
@@ -491,7 +491,7 @@ export function TransitPage() {
                         <span className="inline-block h-2.5 w-2.5 rounded-sm bg-[#16C79A]" />
                         {'> 100'}
                       </span>
-                      <span className="ml-auto text-slate-500">buses/dia</span>
+                      <span className="ml-auto text-slate-500">buses/día</span>
                     </div>
 
                     <div className="h-[400px] sm:h-[440px]">
@@ -523,7 +523,7 @@ export function TransitPage() {
                             {...DARK_TOOLTIP}
                             cursor={{ fill: 'rgba(22, 199, 154, 0.08)' }}
                             formatter={(value: number) => [
-                              fmtEs(value) + ' buses/dia',
+                              fmtEs(value) + ' buses/día',
                               'Frecuencia',
                             ]}
                           />
@@ -555,7 +555,7 @@ export function TransitPage() {
                 <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
                   <div className="mb-8">
                     <p className="text-green font-mono text-sm tracking-widest uppercase mb-3">
-                      Analisis de corredores
+                      Análisis de corredores
                     </p>
                     <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
                       Corredores <span className="text-green">congestionados</span>
@@ -725,7 +725,7 @@ export function TransitPage() {
                         {fmtEs(desertStats.under5)}
                       </p>
                       <p className="text-sm text-red-accent/80 mt-1">
-                        paradas con {'<'} 5 buses/dia
+                        paradas con {'<'} 5 buses/día
                       </p>
                       <p className="text-xs text-slate-500 mt-1">
                         {((desertStats.under5 / desertStats.total) * 100).toFixed(1).replace('.', ',')}% del total
@@ -737,7 +737,7 @@ export function TransitPage() {
                         {fmtEs(desertStats.under10)}
                       </p>
                       <p className="text-sm text-yellow/80 mt-1">
-                        paradas con {'<'} 10 buses/dia
+                        paradas con {'<'} 10 buses/día
                       </p>
                       <p className="text-xs text-slate-500 mt-1">
                         {((desertStats.under10 / desertStats.total) * 100).toFixed(1).replace('.', ',')}% del total
@@ -749,7 +749,7 @@ export function TransitPage() {
                         {fmtEs(desertStats.under20)}
                       </p>
                       <p className="text-sm text-brand-blue/80 mt-1">
-                        paradas con {'<'} 20 buses/dia
+                        paradas con {'<'} 20 buses/día
                       </p>
                       <p className="text-xs text-slate-500 mt-1">
                         {((desertStats.under20 / desertStats.total) * 100).toFixed(1).replace('.', ',')}% del total
@@ -773,22 +773,22 @@ export function TransitPage() {
                     <div className="space-y-4">
                       {[
                         {
-                          label: '< 5 buses/dia',
+                          label: '< 5 buses/día',
                           count: desertStats.under5,
                           color: '#ef4444',
                         },
                         {
-                          label: '5 - 9 buses/dia',
+                          label: '5 - 9 buses/día',
                           count: desertStats.under10 - desertStats.under5,
                           color: '#f97316',
                         },
                         {
-                          label: '10 - 19 buses/dia',
+                          label: '10 - 19 buses/día',
                           count: desertStats.under20 - desertStats.under10,
                           color: '#eab308',
                         },
                         {
-                          label: '20+ buses/dia',
+                          label: '20+ buses/día',
                           count: desertStats.total - desertStats.under20,
                           color: '#16C79A',
                         },
@@ -821,13 +821,13 @@ export function TransitPage() {
             )}
 
             {/* ══════════════════════════════════════════════════════════
-                Section 8: Tranvia (Tram)
+                Section 8: Tranvía (Tram)
                 ══════════════════════════════════════════════════════════ */}
             {study && (
               <section
                 ref={tramRef}
                 className="relative py-12"
-                aria-label="Tranvia de Tenerife"
+                aria-label="Tranvía de Tenerife"
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-brand-surface to-brand-bg pointer-events-none" />
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
@@ -835,7 +835,7 @@ export function TransitPage() {
                 <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
                   <div className="mb-8">
                     <p className="text-[#8b5cf6] font-mono text-sm tracking-widest uppercase mb-3">
-                      Tranvia de Tenerife
+                      Tranvía de Tenerife
                     </p>
                     <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
                       Linea 1 y 2: Santa Cruz <span className="text-[#8b5cf6]">↔</span> La Laguna
@@ -873,7 +873,7 @@ export function TransitPage() {
 
                     <div className="rounded-xl bg-brand-card border border-brand-border p-5">
                       <p className="text-xs text-slate-400 uppercase tracking-wider mb-2 font-medium">
-                        Media tranvias/dia
+                        Media tranvías/día
                       </p>
                       <p className="text-3xl font-bold font-mono text-white">
                         {study.tram_avg_frequency.toFixed(0)}
@@ -891,7 +891,7 @@ export function TransitPage() {
 
                     <div className="rounded-xl bg-brand-card border border-brand-border p-5">
                       <p className="text-xs text-slate-400 uppercase tracking-wider mb-2 font-medium">
-                        Pasajeros / ano
+                        Pasajeros / año
                       </p>
                       <p className="text-3xl font-bold font-mono text-[#8b5cf6]">
                         {formatMillions(study.tram_annual_passengers)}
@@ -907,10 +907,10 @@ export function TransitPage() {
                                   ${tramVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
                     >
                       <h3 className="text-lg font-semibold mb-1">
-                        Top 10 paradas de tranvia mas frecuentadas
+                        Top 10 paradas de tranvía másfrecuentadas
                       </h3>
                       <p className="text-xs text-slate-400 mb-6">
-                        Paradas con mayor numero de tranvias diarios · Fuente: Metrotenerife / Cabildo de Tenerife
+                        Paradas con mayor numero de tranvías diarios · Fuente: Metrotenerife / Cabildo de Tenerife
                       </p>
 
                       <div className="h-[400px] sm:h-[440px]">
@@ -942,7 +942,7 @@ export function TransitPage() {
                               {...DARK_TOOLTIP}
                               cursor={{ fill: 'rgba(139, 92, 246, 0.08)' }}
                               formatter={(value: number) => [
-                                fmtEs(value) + ' tranvias/dia',
+                                fmtEs(value) + ' tranvías/día',
                                 'Frecuencia',
                               ]}
                             />
@@ -967,11 +967,11 @@ export function TransitPage() {
                       Dato clave
                     </h3>
                     <p className="text-slate-300 leading-relaxed">
-                      El tranvia solo cubre el corredor Santa Cruz ↔ La Laguna:
+                      El tranvía solo cubre el corredor Santa Cruz ↔ La Laguna:
                       {' '}<span className="font-mono font-bold text-white">{study.tram_network_km.toFixed(1).replace('.', ',')}</span> km
                       de via frente a una isla de <span className="font-mono font-bold text-white">2.034</span> km&sup2;.
                       Eso supone menos del <span className="font-mono font-bold text-white">1%</span> del territorio.
-                      Para el resto de la isla, el tranvia simplemente no existe como opcion.
+                      Para el resto de la isla, el tranvía simplemente no existe como opción.
                     </p>
                     <p className="text-xs text-slate-500 mt-3">
                       Fuente: Metrotenerife / Cabildo de Tenerife
@@ -1003,7 +1003,7 @@ export function TransitPage() {
                     </h2>
                     <p className="text-slate-300 max-w-2xl">
                       Un sector regulado con licencias limitadas, en declive demografico y
-                      con una adaptacion minima para personas con movilidad reducida.
+                      con una adaptación mínima para personas con movilidad reducida.
                     </p>
                   </div>
 
@@ -1092,7 +1092,7 @@ export function TransitPage() {
                     <p className="text-slate-300 leading-relaxed">
                       El Plan de Rescate del Taxi autorizo solo <span className="font-mono font-bold text-white">151</span> nuevas
                       licencias. El sector enfrenta envejecimiento de la flota y de los conductores, y solo
-                      <span className="font-mono font-bold text-white"> {study.taxi_adapted_pmr}</span> vehiculos
+                      <span className="font-mono font-bold text-white"> {study.taxi_adapted_pmr}</span> vehículos
                       estan adaptados para personas con movilidad reducida — un <span className="font-mono font-bold text-white">
                       {((study.taxi_adapted_pmr / study.taxi_licenses_sc_tenerife) * 100).toFixed(1).replace('.', ',')}%
                       </span> del total.
@@ -1120,7 +1120,7 @@ export function TransitPage() {
                 <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
                   <div className="mb-8">
                     <p className="text-red-accent font-mono text-sm tracking-widest uppercase mb-3">
-                      VTC — Vehiculo de turismo con conductor
+                      VTC — Vehículo de turismo con conductor
                     </p>
                     <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
                       No hay alternativa <span className="text-red-accent">digital</span> al taxi
@@ -1250,7 +1250,7 @@ export function TransitPage() {
                     </h2>
                     <p className="text-slate-300 max-w-2xl">
                       Una vista comparada de todas las alternativas de transporte disponibles
-                      en Tenerife y su capacidad real para mover a la poblacion.
+                      en Tenerife y su capacidad real para mover a la población.
                     </p>
                   </div>
 
@@ -1261,10 +1261,10 @@ export function TransitPage() {
                                 ${compareVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
                   >
                     <h3 className="text-lg font-semibold mb-1">
-                      Pasajeros anuales por modo de transporte publico
+                      Pasajeros anuales por modo de transporte público
                     </h3>
                     <p className="text-xs text-slate-400 mb-6">
-                      Solo guaguas y tranvia mueven pasajeros a escala · Fuente: TITSA / Metrotenerife
+                      Solo guaguas y tranvía mueven pasajeros a escala · Fuente: TITSA / Metrotenerife
                     </p>
 
                     <div className="h-[200px]">
@@ -1337,7 +1337,7 @@ export function TransitPage() {
                     <div className="rounded-xl bg-brand-card border border-brand-border p-5">
                       <div className="flex items-center gap-2 mb-3">
                         <span className="inline-block w-3 h-3 rounded-full bg-[#8b5cf6]" />
-                        <p className="text-sm font-semibold text-white">Tranvia</p>
+                        <p className="text-sm font-semibold text-white">Tranvía</p>
                       </div>
                       <p className="font-mono text-2xl font-bold text-[#8b5cf6]">
                         {formatMillions(study.tram_annual_passengers)}
@@ -1396,14 +1396,14 @@ export function TransitPage() {
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                       <div>
-                        <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Poblacion + turistas</p>
+                        <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Población + turistas</p>
                         <p className="font-mono text-2xl font-bold text-white">
                           {formatMillions(study.population + study.annual_tourists)}
                         </p>
                         <p className="text-xs text-slate-500">personas a mover anualmente</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Transporte publico</p>
+                        <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Transporte público</p>
                         <p className="font-mono text-2xl font-bold text-green">
                           {formatMillions(study.total_public_transport_passengers)}
                         </p>
@@ -1414,7 +1414,7 @@ export function TransitPage() {
                         <p className="font-mono text-2xl font-bold text-red-accent">
                           {study.motorization_index.toFixed(0)}/1.000
                         </p>
-                        <p className="text-xs text-slate-500">vehiculos por habitante</p>
+                        <p className="text-xs text-slate-500">vehículos por habitante</p>
                       </div>
                     </div>
                     <p className="text-xs text-slate-500 mt-4">
@@ -1449,8 +1449,8 @@ export function TransitPage() {
                   </h2>
                   <p className="text-slate-300 max-w-2xl mx-auto leading-relaxed">
                     Los datos de todos los modos de transporte demuestran que Tenerife carece
-                    de una alternativa real al vehiculo privado. Guaguas con baja frecuencia,
-                    un tranvia que solo cubre un corredor, un sector del taxi en declive y
+                    de una alternativa real al vehículo privado. Guaguas con baja frecuencia,
+                    un tranvía que solo cubre un corredor, un sector del taxi en declive y
                     los VTC practicamente prohibidos.
                   </p>
                 </div>
@@ -1464,7 +1464,7 @@ export function TransitPage() {
                     <div className="text-2xl mb-3">&#x1F68C;</div>
                     <h3 className="font-semibold text-white mb-2">Guaguas: frecuencia insuficiente</h3>
                     <p className="text-sm text-slate-400 leading-relaxed">
-                      La mayoria de paradas reciben menos de 10 guaguas al dia.
+                      La mayoría de paradas reciben menos de 10 guaguas al día.
                       Las rutas comparten autopistas congestionadas sin carriles exclusivos.
                       Amplios desiertos de transporte en toda la isla.
                     </p>
@@ -1472,11 +1472,11 @@ export function TransitPage() {
 
                   <div className="rounded-xl bg-brand-card border border-brand-border p-5">
                     <div className="text-2xl mb-3">&#x1F683;</div>
-                    <h3 className="font-semibold text-white mb-2">Tranvia: cobertura minima</h3>
+                    <h3 className="font-semibold text-white mb-2">Tranvía: cobertura mínima</h3>
                     <p className="text-sm text-slate-400 leading-relaxed">
                       Solo {study?.tram_network_km.toFixed(1).replace('.', ',')} km de via para una isla de 2.034 km&sup2;.
                       Unicamente conecta Santa Cruz con La Laguna. Para el 95% de la isla,
-                      el tranvia no existe.
+                      el tranvía no existe.
                     </p>
                   </div>
 
@@ -1506,7 +1506,7 @@ export function TransitPage() {
                       &ldquo;{study.alternatives_verdict}&rdquo;
                     </p>
                     <p className="text-xs text-slate-500 mt-4">
-                      Fuente: Analisis cruzado de datos de TITSA, Metrotenerife, DGT, ISTAC, Gobierno de Canarias y CNMC
+                      Fuente: Análisis cruzado de datos de TITSA, Metrotenerife, DGT, ISTAC, Gobierno de Canarias y CNMC
                     </p>
                   </div>
                 )}
