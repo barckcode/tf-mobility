@@ -27,11 +27,11 @@ ALTERNATIVES = [
         "estado": "operativo",
         "operador": "Metrotenerife S.A.",
         "cobertura": "Area metropolitana Santa Cruz - La Laguna",
-        "usuarios_anuales": 16000000,
+        "usuarios_anuales": 25000000,
         "dato_clave": (
-            "~16M pasajeros/año. Línea 1: Santa Cruz - La Laguna (12,5 km, 21 paradas). "
-            "Línea 2: La Cuesta - Tincer (3,6 km, 6 paradas). Único transporte público "
-            "ferroviario de Canarias."
+            "~25M pasajeros/año (2024). Línea 1: Santa Cruz - La Laguna (12,5 km, 21 paradas). "
+            "Línea 2: La Cuesta - Tíncer (3,6 km, 6 paradas). Frecuencia en hora punta: cada 4,5 minutos. "
+            "86% de usuarios redujeron uso del coche. Valoración: 8,18/10."
         ),
         "descripcion": (
             "Sistema de tranvía que conecta Santa Cruz de Tenerife y San Cristóbal "
@@ -50,11 +50,11 @@ ALTERNATIVES = [
         "estado": "operativo",
         "operador": "Transportes Interurbanos de Tenerife S.A. (TITSA)",
         "cobertura": "Red insular completa",
-        "usuarios_anuales": 50000000,
+        "usuarios_anuales": 80000000,
         "dato_clave": (
-            "~50M pasajeros/año. Más de 100 líneas que cubren toda la isla. "
-            "Programa de gratuidad activo mediante subvención del Gobierno de Canarias. "
-            "Billetaje integrado con tarjeta TenMas."
+            "~80M pasajeros/año (2024, récord histórico). 177 rutas, 3.854 paradas. "
+            "42M km recorridos. 342 nuevas guaguas adquiridas desde 2023. "
+            "Edad media flota: 6,2 años. Programa de gratuidad activo."
         ),
         "descripcion": (
             "Red integral de guaguas interurbanas y urbanas operada por TITSA, "
@@ -166,19 +166,45 @@ ALTERNATIVES = [
         "cobertura": "Zona turistica sur + area metropolitana",
         "usuarios_anuales": 0,
         "dato_clave": (
-            "Uber llegó recientemente a Tenerife. Presencia creciente en las zonas turísticas "
-            "de la costa sur y el área metropolitana. Complementa el servicio de taxi."
+            "Solo 89 licencias Uber activas (desde julio 2023), exclusivamente en la zona sur: "
+            "Adeje, Arona, Granadilla, Guía de Isora y Aeropuerto Sur. Cabify y Bolt NO operan "
+            "en Canarias. 9.000 solicitudes VTC bloqueadas. Moratoria del Gobierno de Canarias en vigor."
         ),
         "descripcion": (
-            "Los servicios de VTC (Vehículo de Turismo con Conductor) "
-            "están disponibles en Tenerife desde hace poco. Presencia creciente "
-            "especialmente en las zonas turísticas de la costa sur (Los Cristianos, "
-            "Costa Adeje, Las Américas) y el área metropolitana de Santa Cruz - La Laguna. "
-            "El marco regulatorio sigue en evolución."
+            "Los servicios de VTC (Vehículo de Turismo con Conductor) tienen presencia muy "
+            "limitada en Tenerife. Solo Uber opera con 89 licencias activas desde julio 2023, "
+            "exclusivamente en municipios del sur turístico (Adeje, Arona, Granadilla, "
+            "Guía de Isora) y el Aeropuerto Sur. Cabify y Bolt no operan en Canarias. "
+            "El Gobierno de Canarias mantiene una moratoria que ha bloqueado más de 9.000 "
+            "solicitudes de nuevas licencias VTC. La ratio VTC/taxi es de 1:13,2, "
+            "una de las más bajas de España."
         ),
         "color": "#6C757D",
         "icono": "vtc",
         "url_fuente": "https://www.uber.com/es/es/ride/",
+    },
+    {
+        "nombre": "Taxi",
+        "tipo": "privado",
+        "estado": "operativo",
+        "operador": "Autónomos / Cooperativas locales",
+        "cobertura": "Toda la isla (concentración en zona metropolitana y turística)",
+        "usuarios_anuales": 0,
+        "dato_clave": (
+            "~2.266 licencias de taxi en Canarias (2026). Santa Cruz de Tenerife: ~900 licencias, "
+            "con un plan de rescate de 151 licencias (2023-2026) por valor de 6M€. "
+            "Solo 11 taxis adaptados para movilidad reducida. INE registró 6.130 taxis en Canarias en 2019."
+        ),
+        "descripcion": (
+            "Servicio de taxi regulado por los ayuntamientos. La oferta se concentra en las zonas "
+            "turísticas del sur y el área metropolitana de Santa Cruz - La Laguna. El Ayuntamiento de "
+            "Santa Cruz tiene en marcha un plan de rescate de licencias (2023-2026) ante la caída de "
+            "actividad. La ratio de VTC por taxi en Canarias es de 1 VTC por cada 13,2 taxis, "
+            "una de las más bajas de España. No existe una app unificada de taxi para toda la isla."
+        ),
+        "color": "#F5A623",
+        "icono": "taxi",
+        "url_fuente": "https://www.santacruzdetenerife.es/web/servicios-municipales/movilidad-y-accesibilidad-universal/transporte-publico-auto-taxi",
     },
 ]
 
@@ -253,6 +279,13 @@ TOURISM_KPIS = [
         "unidad": "regulacion",
         "fuente": "Gobierno de Canarias",
         "fecha_dato": date(2024, 1, 1),
+    },
+    {
+        "clave": "indice_motorizacion_tenerife",
+        "valor": "839",
+        "unidad": "vehiculos/1000 habitantes",
+        "fuente": "Observatorio de Movilidad Metropolitana (OMM) - Informe 2023",
+        "fecha_dato": date(2023, 12, 31),
     },
 ]
 

@@ -10,6 +10,9 @@ from app.models.parada_guagua import ParadaGuagua
 from app.models.ruta_guagua import RutaGuagua
 from app.models.frecuencia_parada import FrecuenciaParada
 from app.models.ruta_tramo import RutaTramo
+from app.models.parada_tranvia import ParadaTranvia
+from app.models.ruta_tranvia import RutaTranvia
+from app.models.frecuencia_tranvia import FrecuenciaTranvia
 
 __all__ = [
     "Contrato",
@@ -24,4 +27,7 @@ __all__ = [
     "RutaGuagua",
     "FrecuenciaParada",
     "RutaTramo",
+    "ParadaTranvia",
+    "RutaTranvia",
+    "FrecuenciaTranvia",
 ]

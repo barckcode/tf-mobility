@@ -63,6 +63,7 @@ def run_all():
         comparativa,
         trafico_imd,
         transporte_publico,
+        tranvia,
     )
 
     pipelines = [
@@ -74,6 +75,7 @@ def run_all():
         ("alternativas", alternativas.run),
         ("comparativa", comparativa.run),
         ("transporte_publico", transporte_publico.run),
+        ("tranvia", tranvia.run),
     ]
 
     results = {}
@@ -112,6 +114,7 @@ def run_single(pipeline_name: str):
         comparativa,
         trafico_imd,
         transporte_publico,
+        tranvia,
     )
 
     pipeline_map = {
@@ -123,6 +126,7 @@ def run_single(pipeline_name: str):
         "alternativas": alternativas.run,
         "comparativa": comparativa.run,
         "transporte_publico": transporte_publico.run,
+        "tranvia": tranvia.run,
     }
 
     if pipeline_name not in pipeline_map:

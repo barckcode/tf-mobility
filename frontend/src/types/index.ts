@@ -232,6 +232,57 @@ export interface TransitRoutesResponse {
   total: number;
 }
 
+// S7b — Tram (Tranvía)
+export interface TramSummary {
+  total_stops: number;
+  total_routes: number;
+  avg_trams_per_day: number;
+  busiest_stop_name: string;
+  busiest_stop_trams: number;
+  network_km: number;
+  annual_passengers: number;
+}
+
+export interface TramStop {
+  id: number;
+  stop_id: string;
+  name: string;
+  lat: number;
+  lon: number;
+  trams_dia: number | null;
+  rutas_count: number | null;
+}
+
+export interface TramStopsResponse {
+  stops: TramStop[];
+  total: number;
+}
+
+// S7c — Transit Study (comprehensive)
+export interface TransitStudy {
+  bus_stops: number;
+  bus_routes: number;
+  bus_avg_frequency: number;
+  bus_annual_passengers: number;
+  tram_stops: number;
+  tram_routes: number;
+  tram_avg_frequency: number;
+  tram_annual_passengers: number;
+  tram_network_km: number;
+  taxi_licenses_canarias: number;
+  taxi_licenses_sc_tenerife: number;
+  taxi_adapted_pmr: number;
+  vtc_licenses_active: number;
+  vtc_operator: string;
+  vtc_coverage: string;
+  vtc_blocked_applications: number;
+  motorization_index: number;
+  population: number;
+  annual_tourists: number;
+  total_public_transport_passengers: number;
+  alternatives_verdict: string;
+}
+
 // Metadata — Data freshness
 export interface PipelineFreshness {
   pipeline: string;

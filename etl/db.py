@@ -206,6 +206,38 @@ class RutaTramo(Base):
     )
 
 
+class ParadaTranvia(Base):
+    """Tram stop from Metropolitano de Tenerife GTFS data."""
+    __tablename__ = "paradas_tranvia"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    stop_id = Column(String(20), unique=True, nullable=False)
+    name = Column(String(300))
+    lat = Column(Float)
+    lon = Column(Float)
+
+
+class RutaTranvia(Base):
+    """Tram route from Metropolitano de Tenerife GTFS data."""
+    __tablename__ = "rutas_tranvia"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    route_id = Column(String(20), unique=True, nullable=False)
+    short_name = Column(String(50))
+    long_name = Column(String(300))
+    color = Column(String(10))
+
+
+class FrecuenciaTranvia(Base):
+    """Pre-computed tram frequency per stop on a typical weekday."""
+    __tablename__ = "frecuencia_tranvia"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    stop_id = Column(String(20), unique=True, nullable=False)
+    trams_dia = Column(Integer, default=0)
+    rutas_count = Column(Integer, default=0)
+
+
 class EtlRun(Base):
     """Tracks ETL pipeline execution history for data freshness monitoring."""
     __tablename__ = "etl_runs"

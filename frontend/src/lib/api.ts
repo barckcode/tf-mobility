@@ -15,6 +15,9 @@ import type {
   TransitStopsResponse,
   TransitRoutesResponse,
   TransitCorridorsResponse,
+  TramSummary,
+  TramStopsResponse,
+  TransitStudy,
 } from '@/types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -102,4 +105,16 @@ export async function getTransitRoutes(): Promise<TransitRoutesResponse> {
 
 export async function getTransitCorridors(): Promise<TransitCorridorsResponse> {
   return fetchJSON<TransitCorridorsResponse>(`${API_BASE}/transit/corridors`);
+}
+
+export async function getTramSummary(): Promise<TramSummary> {
+  return fetchJSON<TramSummary>(`${API_BASE}/transit/tram/summary`);
+}
+
+export async function getTramStops(): Promise<TramStopsResponse> {
+  return fetchJSON<TramStopsResponse>(`${API_BASE}/transit/tram/stops`);
+}
+
+export async function getTransitStudy(): Promise<TransitStudy> {
+  return fetchJSON<TransitStudy>(`${API_BASE}/transit/study`);
 }

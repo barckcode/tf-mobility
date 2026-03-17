@@ -8,6 +8,9 @@ from app.models.parada_guagua import ParadaGuagua
 from app.models.ruta_guagua import RutaGuagua
 from app.models.frecuencia_parada import FrecuenciaParada
 from app.models.ruta_tramo import RutaTramo
+from app.models.parada_tranvia import ParadaTranvia
+from app.models.ruta_tranvia import RutaTranvia
+from app.models.frecuencia_tranvia import FrecuenciaTranvia
 from app.schemas.transit import (
     BusStopResponse,
     BusRouteResponse,
@@ -17,6 +20,10 @@ from app.schemas.transit import (
     CorridorRouteResponse,
     CorridorResponse,
     TransitCorridorsResponse,
+    TramStopResponse,
+    TramSummaryResponse,
+    TramStopsResponse,
+    TransitStudyResponse,
 )
 
 router = APIRouter(tags=["transit"])
@@ -153,4 +160,101 @@ def transit_corridors(db: Session = Depends(get_db)):
         corridors=corridors,
         total_roads=len(corridors),
         total_route_overlaps=total_overlaps,
+    )
+
+
+@router.get("/transit/tram/summary", response_model=TramSummaryResponse)
+def tram_summary(db: Session = Depends(get_db)):
+    """Tram system KPIs."""
+    total_stops = db.query(func.count(ParadaTranvia.id)).scalar() or 0
+    total_routes = db.query(func.count(RutaTranvia.id)).scalar() or 0
+    avg_trams = db.query(func.avg(FrecuenciaTranvia.trams_dia)).scalar() or 0.0
+
+    busiest_freq = (
+        db.query(FrecuenciaTranvia)
+        .order_by(FrecuenciaTranvia.trams_dia.desc())
+        .first()
+    )
+    busiest_name = ""
+    busiest_trams = 0
+    if busiest_freq:
+        busiest_trams = busiest_freq.trams_dia or 0
+        stop = db.query(ParadaTranvia).filter_by(stop_id=busiest_freq.stop_id).first()
+        busiest_name = stop.name if stop else busiest_freq.stop_id
+
+    return TramSummaryResponse(
+        total_stops=total_stops,
+        total_routes=total_routes,
+        avg_trams_per_day=round(float(avg_trams), 1),
+        busiest_stop_name=busiest_name,
+        busiest_stop_trams=busiest_trams,
+        network_km=16.1,
+        annual_passengers=25000000,
+    )
+
+
+@router.get("/transit/tram/stops", response_model=TramStopsResponse)
+def list_tram_stops(db: Session = Depends(get_db)):
+    """Return all tram stops with frequency data."""
+    stops = db.query(ParadaTranvia).order_by(ParadaTranvia.stop_id).all()
+    frequencies = db.query(FrecuenciaTranvia).all()
+    freq_map = {f.stop_id: f for f in frequencies}
+
+    return TramStopsResponse(
+        stops=[
+            TramStopResponse(
+                id=s.id,
+                stop_id=s.stop_id,
+                name=s.name or "",
+                lat=s.lat or 0.0,
+                lon=s.lon or 0.0,
+                trams_dia=freq_map[s.stop_id].trams_dia if s.stop_id in freq_map else None,
+                rutas_count=freq_map[s.stop_id].rutas_count if s.stop_id in freq_map else None,
+            )
+            for s in stops
+        ],
+        total=len(stops),
+    )
+
+
+@router.get("/transit/study", response_model=TransitStudyResponse)
+def transit_study(db: Session = Depends(get_db)):
+    """Comprehensive transit study combining all transport modes."""
+    # Bus data
+    bus_stops = db.query(func.count(ParadaGuagua.id)).scalar() or 0
+    bus_routes = db.query(func.count(RutaGuagua.id)).scalar() or 0
+    bus_avg = db.query(func.avg(FrecuenciaParada.buses_dia)).scalar() or 0.0
+
+    # Tram data
+    tram_stops = db.query(func.count(ParadaTranvia.id)).scalar() or 0
+    tram_routes = db.query(func.count(RutaTranvia.id)).scalar() or 0
+    tram_avg = db.query(func.avg(FrecuenciaTranvia.trams_dia)).scalar() or 0.0
+
+    return TransitStudyResponse(
+        bus_stops=bus_stops,
+        bus_routes=bus_routes,
+        bus_avg_frequency=round(float(bus_avg), 1),
+        bus_annual_passengers=80000000,
+        tram_stops=tram_stops,
+        tram_routes=tram_routes,
+        tram_avg_frequency=round(float(tram_avg), 1),
+        tram_annual_passengers=25000000,
+        tram_network_km=16.1,
+        taxi_licenses_canarias=2266,
+        taxi_licenses_sc_tenerife=900,
+        taxi_adapted_pmr=11,
+        vtc_licenses_active=89,
+        vtc_operator="Uber",
+        vtc_coverage="Zona sur: Adeje, Arona, Granadilla, Guía de Isora, Aeropuerto Sur",
+        vtc_blocked_applications=9000,
+        motorization_index=839.0,
+        population=928604,
+        annual_tourists=7280000,
+        total_public_transport_passengers=105000000,
+        alternatives_verdict=(
+            "El transporte público (guaguas + tranvía) mueve ~105M pasajeros/año, "
+            "pero con un índice de motorización de 839 vehículos/1.000 habitantes, "
+            "el vehículo privado sigue siendo la única alternativa viable para la "
+            "mayoría de la población."
+        ),
     )
