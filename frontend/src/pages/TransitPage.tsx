@@ -455,7 +455,7 @@ export function TransitPage() {
               <section
                 ref={chartRef}
                 className="relative py-12"
-                aria-label="Top 10 paradas de guagua másfrecuentadas"
+                aria-label="Top 10 paradas de guagua más frecuentadas"
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-brand-bg to-brand-surface pointer-events-none" />
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
@@ -467,7 +467,7 @@ export function TransitPage() {
                                 ${chartVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
                   >
                     <h2 className="text-lg font-semibold mb-1">
-                      Top 10 paradas de guagua másfrecuentadas
+                      Top 10 paradas de guagua más frecuentadas
                     </h2>
                     <p className="text-xs text-slate-400 mb-6">
                       Paradas con mayor numero de guaguas diarias · Fuente: TITSA / Cabildo de Tenerife
@@ -907,7 +907,7 @@ export function TransitPage() {
                                   ${tramVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
                     >
                       <h3 className="text-lg font-semibold mb-1">
-                        Top 10 paradas de tranvía másfrecuentadas
+                        Top 10 paradas de tranvía más frecuentadas
                       </h3>
                       <p className="text-xs text-slate-400 mb-6">
                         Paradas con mayor numero de tranvías diarios · Fuente: Metrotenerife / Cabildo de Tenerife

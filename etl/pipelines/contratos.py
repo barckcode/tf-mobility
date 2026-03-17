@@ -171,8 +171,11 @@ TYPE_MAP = {
     "1": "obras",
     "2": "servicios",
     "3": "suministros",
+    "8": "concesion_obras",
     "21": "servicios",
     "31": "mixto",
+    "40": "colaboracion_publico_privada",
+    "50": "concesion_servicios",
 }
 
 

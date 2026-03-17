@@ -125,10 +125,10 @@ export function DataSources() {
   return (
     <section
       ref={ref}
-      className="relative py-16"
+      className="relative pt-28 pb-16"
       aria-label="Fuentes de datos públicos"
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-brand-surface to-brand-bg pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-brand-bg via-brand-bg to-brand-surface pointer-events-none" />
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">

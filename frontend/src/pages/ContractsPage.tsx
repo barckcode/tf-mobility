@@ -44,6 +44,9 @@ const TYPE_COLORS: Record<string, string> = {
   suministros: '#eab308',
   privado: '#8b5cf6',
   mixto: '#f97316',
+  concesion_obras: '#06b6d4',
+  concesion_servicios: '#ec4899',
+  colaboracion_publico_privada: '#84cc16',
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -52,6 +55,11 @@ const TYPE_LABELS: Record<string, string> = {
   suministros: 'Suministros',
   privado: 'Privado',
   mixto: 'Mixto',
+  concesion_obras: 'Concesión de obras',
+  concesion_servicios: 'Concesión de servicios',
+  colaboracion_publico_privada: 'Colaboración público-privada',
+  '8': 'Concesión de obras',
+  '50': 'Concesión de servicios',
 };
 
 function fmtEs(n: number): string {

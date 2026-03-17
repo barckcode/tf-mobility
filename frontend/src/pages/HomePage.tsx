@@ -14,8 +14,8 @@ export function HomePage() {
     <div className="min-h-screen bg-brand-bg text-white">
       <Header />
       <main>
-        <Hero />
         <DataSources />
+        <Hero />
         <TrafficIntensity />
         <Tourism />
         <Contracts />
